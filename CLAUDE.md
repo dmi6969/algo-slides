@@ -299,6 +299,7 @@ algo-slides/
 
 ## 13. 部署
 
-- 推送到 GitHub 的 `main` 分支後，GitHub Pages（Settings → Pages → Deploy from a branch → `main` / `(root)`）會自動更新網站。
-- 網址格式：`https://{GitHub 帳號}.github.io/{repo 名稱}/`。
+- 原始碼放在 `main` 分支；網站由 GitHub Pages 發布，這個 repo 的 Pages 是推送 `gh-pages` 分支時自動開啟的。
+- 更新網站時，兩個分支都要推送：`git push origin main`，以及 `git push origin main:gh-pages`。只推送 `main` 的話，網站可能不會更新。
+- 網址：https://dmi6969.github.io/algo-slides/
 - 只有在使用者要求時，才執行 `git commit` 或 `git push`。
