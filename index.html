@@ -40,9 +40,31 @@
     <p id="empty" class="empty" hidden></p>
   </main>
 
+  <section class="how" aria-labelledby="how-title">
+    <h2 id="how-title">這些簡報是怎麼做出來的</h2>
+    <p>每一份簡報都是 AI 讀取專案裡的 CLAUDE.md 之後，照同一套規則產生的。任何人都可以用相同的方式新增題目：</p>
+    <ol class="how-steps">
+      <li>
+        <h3>下載專案</h3>
+        <p><code>git clone https://github.com/dmi6969/algo-slides.git</code></p>
+      </li>
+      <li>
+        <h3>開啟 Claude Code</h3>
+        <p>在專案資料夾執行 <code>claude</code>，它會自動讀取 CLAUDE.md 裡的規則。</p>
+      </li>
+      <li>
+        <h3>輸入題目網址</h3>
+        <p>例如 <code>新增這題：https://leetcode.com/problems/two-sum/</code>。AI 會讀題、驗證程式碼、建立簡報，首頁也會自動出現新題目。Codeforces 題目要另外貼上題目內容。</p>
+      </li>
+    </ol>
+    <p class="how-links">
+      <a href="https://github.com/dmi6969/algo-slides/blob/main/CLAUDE.md" target="_blank" rel="noopener">閱讀 CLAUDE.md ↗</a>
+    </p>
+  </section>
+
   <footer class="home-footer">
     <p>簡報操作：方向鍵翻頁，<kbd>F</kbd> 全螢幕，<kbd>S</kbd> 講者備註，<kbd>Esc</kbd> 投影片總覽。</p>
-    <p>新增題目的規則寫在專案的 CLAUDE.md。</p>
+    <p>原始碼：<a href="https://github.com/dmi6969/algo-slides" target="_blank" rel="noopener">github.com/dmi6969/algo-slides</a></p>
   </footer>
 
   <script src="problems.js"></script>

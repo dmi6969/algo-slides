@@ -34,7 +34,7 @@ Algo Slides 是一個「演算法題解簡報網站」。使用者提供一道 L
 algo-slides/
 ├── CLAUDE.md                  專案規則（本文件）
 ├── README.md                  給人看的專案介紹
-├── index.html                 首頁：題目列表
+├── index.html                 首頁：題目列表，以及說明如何用 Claude Code 新增題目的「製作方式」區塊
 ├── problems.js                所有題目的資料（唯一的資料來源）
 ├── assets/
 │   ├── style.css              全站共用樣式與設計變數（首頁＋簡報）
