@@ -32,23 +32,48 @@
     return { text: d, cls: d.toLowerCase() };
   }
 
+  // 同一題的兩個版本（CLAUDE.md 第 4 節）
+  function deckHref(id, variant) {
+    return 'problems/' + id + (variant === 'mine' ? '--mine' : '') + '.html';
+  }
+
+  function versionLink(problem, variant) {
+    const a = el('a', variant, variant === 'mine' ? '我的解法' : '參考解答');
+    a.href = deckHref(problem.id, variant);
+    return a;
+  }
+
+  function footText(problem) {
+    let text = '參考解答 ' + problem.language;
+    if (problem.mine) text += '｜我的解法 ' + (problem.mine.language || problem.language);
+    return text + ' · ' + problem.added;
+  }
+
   function card(problem) {
     const li = el('li', 'problem-card');
-    const link = el('a');
-    link.href = 'problems/' + problem.id + '.html';
+
+    const title = el('h2');
+    const titleLink = el('a', '', problem.title);
+    titleLink.href = deckHref(problem.id, 'reference');
+    title.appendChild(titleLink);
 
     const meta = el('div', 'card-meta');
     const info = difficultyInfo(problem);
     meta.appendChild(el('span', 'badge ' + info.cls, info.text));
     (problem.tags || []).forEach(function (t) { meta.appendChild(el('span', 'tag', t)); });
 
-    link.append(
+    // 一定有參考解答；problems.js 有 mine 欄位時，多一個「我的解法」
+    const versions = el('div', 'card-versions');
+    versions.appendChild(versionLink(problem, 'reference'));
+    if (problem.mine) versions.appendChild(versionLink(problem, 'mine'));
+
+    li.append(
       el('p', 'eyebrow', problem.platform + ' · ' + problem.number),
-      el('h2', '', problem.title),
+      title,
       meta,
-      el('p', 'card-foot', problem.language + ' · ' + problem.added)
+      el('p', 'card-foot', footText(problem)),
+      versions
     );
-    li.appendChild(link);
     return li;
   }
 

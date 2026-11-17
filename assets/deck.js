@@ -1,10 +1,10 @@
 /*
  * Algo Slides 簡報共用程式
- * 1. 依 <body data-problem-id> 從 problems.js 找到題目，填入標題頁
- * 2. 檢查 5 個段落是否齊全、順序是否正確，不符合 CLAUDE.md 時在頁面頂端顯示警告
+ * 1. 依 <body data-problem-id data-variant> 從 problems.js 找到題目，填入標題頁並標示版本（參考解答／我的解法）
+ * 2. 檢查段落、版本與檔名是否符合 CLAUDE.md，不符合時在頁面頂端顯示警告
  * 3. 在每個段落前插入深藍色分隔頁，並在最後加上 THE END 頁
  * 4. 用 KaTeX 排版 $...$ 與 $$...$$ 公式（載入失敗時改成純文字）
- * 5. 建立左下角的段落導覽列
+ * 5. 建立左下角的導覽列：段落、切換版本、下載 PPT
  * 6. 初始化 reveal.js
  *
  * 新增題目時不需要修改這個檔案（見 CLAUDE.md 第 3 節）。
@@ -22,6 +22,28 @@
   ];
   const PART_KEYS = PARTS.map(function (p) { return p.key; });
 
+  // 同一題的兩個版本（CLAUDE.md 第 4 節）：檔名分別是 {id}.html 與 {id}--mine.html
+  const VARIANTS = {
+    reference: { label: '參考解答', suffix: '' },
+    mine: { label: '我的解法', suffix: '--mine' }
+  };
+
+  // 匯出 PPT 時使用的顏色，全部來自 style.css 的設計變數
+  const COLOR_VARS = {
+    bg: '--bg', surface: '--surface', surface2: '--surface-2', border: '--border',
+    text: '--text', textStrong: '--text-strong', textMuted: '--text-muted',
+    accent: '--accent', accentBg: '--accent-bg', accentBorder: '--accent-border', accentOnNavy: '--accent-on-navy',
+    navy: '--navy', onNavy: '--on-navy', onNavyMuted: '--on-navy-muted',
+    success: '--success', successBg: '--success-bg', successText: '--success-text',
+    codeBg: '--code-bg', codeText: '--code-text', codeComment: '--code-comment',
+    easy: '--easy', medium: '--medium', hard: '--hard'
+  };
+
+  // PPT 匯出：按下按鈕時才載入，平常不影響簡報的載入速度
+  const PPTX_LIB = 'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js';
+  const SCRIPT_SRC = document.currentScript ? document.currentScript.src : '';
+  const EXPORTER = SCRIPT_SRC ? SCRIPT_SRC.replace(/deck\.js(\?.*)?$/, 'export-pptx.js') : '../assets/export-pptx.js';
+
   // 範本（data-problem-id="TEMPLATE"）預覽時使用的示範資料
   const TEMPLATE_DEMO = {
     platform: 'Platform',
@@ -36,11 +58,21 @@
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
+  function readColors() {
+    const colors = {};
+    Object.keys(COLOR_VARS).forEach(function (key) { colors[key] = cssVar(COLOR_VARS[key]); });
+    return colors;
+  }
+
   // LeetCode 顯示 Easy / Medium / Hard；Codeforces 的 rating 是數字
   function difficultyInfo(problem) {
     const d = String(problem.difficulty || '');
     if (/^\d+$/.test(d)) return { text: 'Rating ' + d, cls: 'rating' };
     return { text: d, cls: d.toLowerCase() };
+  }
+
+  function deckFile(id, variant) {
+    return id + VARIANTS[variant].suffix + '.html';
   }
 
   function el(tag, cls, text) {
@@ -55,7 +87,7 @@
   }
 
   // ---------- 1. 標題頁 ----------
-  function fillTitleSlide(problem) {
+  function fillTitleSlide(problem, variant) {
     const slot = function (name) { return document.querySelector('[data-fill="' + name + '"]'); };
     const setText = function (name, text) {
       const node = slot(name);
@@ -78,10 +110,15 @@
       tags.replaceChildren.apply(tags, (problem.tags || []).map(function (t) { return el('span', 'tag', t); }));
     }
 
+    // 版本徽章：參考解答／我的解法
+    const meta = document.querySelector('.title-slide .meta');
+    if (meta) meta.appendChild(el('span', 'badge variant-badge ' + variant, VARIANTS[variant].label));
+
     const link = slot('url');
     if (link) link.href = problem.url;
 
-    document.title = problem.platform + ' ' + problem.number + ' · ' + problem.title + ' | Algo Slides';
+    document.title = problem.platform + ' ' + problem.number + ' · ' + problem.title
+      + '（' + VARIANTS[variant].label + '）| Algo Slides';
   }
 
   // ---------- 2. 結構檢查（在插入分隔頁之前執行） ----------
@@ -121,6 +158,23 @@
     return issues;
   }
 
+  // 版本與檔名是否一致（CLAUDE.md 第 4、5 節）
+  function checkVariant(id, variant, problem) {
+    const issues = [];
+    if (!VARIANTS[variant]) {
+      issues.push('data-variant 只能是 reference 或 mine，目前是「' + variant + '」');
+      return issues;
+    }
+    const actual = decodeURIComponent(location.pathname.split('/').pop() || '');
+    if (id !== 'TEMPLATE' && /\.html$/.test(actual) && actual !== deckFile(id, variant)) {
+      issues.push('檔名應該是 ' + deckFile(id, variant) + '，目前是 ' + actual);
+    }
+    if (variant === 'mine' && problem && id !== 'TEMPLATE' && !problem.mine) {
+      issues.push('這是「我的解法」，但 problems.js 這一題沒有 mine 欄位，請依 CLAUDE.md 第 5 節補上');
+    }
+    return issues;
+  }
+
   function showWarning(messages) {
     const box = el('div', 'structure-warning');
     box.setAttribute('role', 'alert');
@@ -155,8 +209,16 @@
     document.querySelector('.reveal .slides').appendChild(end);
   }
 
-  // ---------- 4. 段落導覽列 ----------
-  function buildPartNav(sections) {
+  // 程式碼高亮會改寫 <code> 的內容，先把原始程式碼存起來給 PPT 匯出使用
+  function keepRawCode() {
+    document.querySelectorAll('.reveal pre code').forEach(function (code) {
+      const tpl = code.querySelector('script[type="text/template"]');
+      code.setAttribute('data-raw-code', tpl ? tpl.textContent : code.textContent);
+    });
+  }
+
+  // ---------- 4. 導覽列：段落、切換版本、下載 PPT ----------
+  function buildPartNav(sections, ctx) {
     const nav = el('nav', 'part-nav');
     nav.setAttribute('aria-label', '段落導覽');
 
@@ -177,6 +239,20 @@
       nav.appendChild(a);
       links[p.key] = a;
     });
+
+    // 另一個版本存在時，提供切換連結
+    const other = ctx.variant === 'mine' ? 'reference' : 'mine';
+    const hasOther = other === 'reference' || (ctx.problem && ctx.problem.mine);
+    if (ctx.id !== 'TEMPLATE' && hasOther) {
+      const sw = el('a', 'switch-link', '切換：' + VARIANTS[other].label);
+      sw.href = deckFile(ctx.id, other);
+      nav.appendChild(sw);
+    }
+
+    const ppt = el('button', 'ppt-button', '下載 PPT');
+    ppt.type = 'button';
+    ppt.addEventListener('click', function () { exportPptx(ppt, ctx); });
+    nav.appendChild(ppt);
 
     document.body.appendChild(nav);
     return links;
@@ -201,12 +277,13 @@
     throwOnError: false
   };
 
-  // KaTeX 載入失敗時，把常見的 LaTeX 指令轉成一般符號，讓觀眾至少看得懂
+  // KaTeX 載入失敗或匯出 PPT 時，把常見的 LaTeX 指令轉成一般符號
   const TEX_TEXT = {
     '\\le': '≤', '\\leq': '≤', '\\ge': '≥', '\\geq': '≥', '\\ne': '≠', '\\neq': '≠',
     '\\lt': '<', '\\gt': '>', '\\times': '×', '\\cdot': '·', '\\ldots': '…', '\\dots': '…',
-    '\\to': '→', '\\rightarrow': '→', '\\Rightarrow': '⇒', '\\approx': '≈', '\\in': '∈',
+    '\\to': '→', '\\rightarrow': '→', '\\Rightarrow': '⇒', '\\leftarrow': '←', '\\approx': '≈', '\\in': '∈',
     '\\sum': 'Σ', '\\infty': '∞', '\\lfloor': '⌊', '\\rfloor': '⌋', '\\lceil': '⌈', '\\rceil': '⌉',
+    '\\Sigma': 'Σ', '\\bigl': '', '\\bigr': '', '\\limits': '', '\\displaystyle': '',
     '\\,': ' ', '\\;': ' ', '\\ ': ' ', '\\quad': '  '
   };
 
@@ -253,26 +330,89 @@
     }
   }
 
+  // ---------- 6. 下載 PPT ----------
+  const scriptCache = {};
+  function loadScript(src) {
+    if (!scriptCache[src]) {
+      scriptCache[src] = new Promise(function (resolve, reject) {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = function () {
+          delete scriptCache[src];
+          reject(new Error('無法載入 ' + src));
+        };
+        document.head.appendChild(s);
+      });
+    }
+    return scriptCache[src];
+  }
+
+  function exportPptx(button, ctx) {
+    const original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'PPT 產生中…';
+    loadScript(PPTX_LIB)
+      .then(function () { return loadScript(EXPORTER); })
+      .then(function () {
+        const pptx = window.AlgoSlidesPptx.build(window.PptxGenJS, document, {
+          problem: ctx.problem,
+          variantLabel: VARIANTS[ctx.variant].label,
+          parts: PARTS,
+          colors: readColors(),
+          texToText: texToText,
+          difficultyInfo: difficultyInfo
+        });
+        const base = ctx.id === 'TEMPLATE' ? 'template' : deckFile(ctx.id, ctx.variant).replace(/\.html$/, '');
+        return pptx.writeFile({ fileName: base + '.pptx' });
+      })
+      .catch(function (err) {
+        console.error(err);
+        alert('PPT 產生失敗：' + err.message);
+      })
+      .then(function () {
+        button.disabled = false;
+        button.textContent = original;
+      });
+  }
+
+  // 給 PPT 匯出程式與測試程式共用
+  window.AlgoSlides = {
+    PARTS: PARTS,
+    VARIANTS: VARIANTS,
+    COLOR_VARS: COLOR_VARS,
+    texToText: texToText,
+    difficultyInfo: difficultyInfo,
+    deckFile: deckFile
+  };
+
   // ---------- 啟動 ----------
   function init() {
     const id = document.body.dataset.problemId;
+    const variant = document.body.dataset.variant || 'reference';
     let problem = (window.PROBLEMS || []).find(function (p) { return p.id === id; });
     if (!problem && id === 'TEMPLATE') problem = TEMPLATE_DEMO;
 
     const authored = getSections();
     const issues = [];
     if (problem) {
-      fillTitleSlide(problem);
+      if (VARIANTS[variant]) fillTitleSlide(problem, variant);
     } else {
       issues.push('problems.js 裡找不到 id 為「' + id + '」的題目，請依 CLAUDE.md 第 5 節新增');
     }
+    issues.push.apply(issues, checkVariant(id, variant, problem));
     issues.push.apply(issues, checkStructure(authored));
     if (issues.length) showWarning(issues);
 
+    keepRawCode();
     insertDividers(authored);
     appendEndSlide();
     renderMath();
-    const links = buildPartNav(getSections());
+    const links = buildPartNav(getSections(), {
+      id: id,
+      variant: VARIANTS[variant] ? variant : 'reference',
+      problem: problem || TEMPLATE_DEMO
+    });
 
     Reveal.initialize({
       hash: true,
@@ -292,5 +432,6 @@
     });
   }
 
-  init();
+  // 只在真的有 reveal.js 時啟動；在 Node.js 測試中只載入上面的共用函式
+  if (window.Reveal) init();
 })();

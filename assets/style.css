@@ -41,6 +41,8 @@
 
   /* 程式碼區塊 */
   --code-bg: #0f172a;
+  --code-text: #c9d1d9;
+  --code-comment: #8b949e;
 
   /* 難度：當作徽章的底色，搭配白字 */
   --easy: #166534;
@@ -93,6 +95,18 @@
 .badge.medium { background: var(--medium); }
 .badge.hard { background: var(--hard); }
 .badge.rating { background: var(--navy); }
+
+/* 版本徽章：參考解答／我的解法 */
+.badge.variant-badge {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-strong);
+}
+.badge.variant-badge.mine {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-navy);
+}
 
 .tag {
   display: inline-block;
@@ -252,7 +266,8 @@ body.home {
   padding: 0;
   list-style: none;
 }
-.problem-card a {
+/* 題目卡片：標題連到參考解答，下方的按鈕切換版本 */
+.problem-card {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -262,16 +277,38 @@ body.home {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  color: inherit;
-  text-decoration: none;
   transition: border-color 0.15s, transform 0.15s;
 }
-.problem-card a:hover,
-.problem-card a:focus-visible {
+.problem-card:hover,
+.problem-card:focus-within {
   border-color: var(--accent);
-  outline: none;
-  color: inherit;
   transform: translateY(-2px);
+}
+.problem-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+.problem-card h2 a:hover { text-decoration: underline; }
+.card-versions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.card-versions a {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.card-versions a:hover { border-color: var(--accent); }
+.card-versions a.mine {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-navy);
 }
 .problem-card .eyebrow {
   margin: 0;
@@ -377,6 +414,7 @@ body.home {
   font-size: 13px;
   overflow-wrap: anywhere;
 }
+.how .how-note { margin: 16px 0 0; }
 .how .how-links {
   margin: 14px 0 0;
   font-size: 14px;
@@ -384,8 +422,9 @@ body.home {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .problem-card a { transition: none; }
-  .problem-card a:hover { transform: none; }
+  .problem-card { transition: none; }
+  .problem-card:hover,
+  .problem-card:focus-within { transform: none; }
 }
 
 /* ---------- 4. 簡報內容 ---------- */
@@ -699,9 +738,25 @@ body.home {
   font-weight: 700;
 }
 .part-nav .home-link { margin-right: 8px; }
+.part-nav .switch-link { margin-left: 8px; }
+
+/* 下載 PPT 按鈕 */
+.part-nav .ppt-button {
+  margin-left: 8px;
+  padding: 3px 10px;
+  border: 1px solid var(--navy);
+  border-radius: 999px;
+  background: var(--navy);
+  color: var(--on-navy);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.part-nav .ppt-button:hover { background: var(--accent); }
+.part-nav .ppt-button:disabled { cursor: progress; opacity: 0.7; }
 
 @media (max-width: 900px) {
-  .part-nav a:not(.home-link) { display: none; }
+  .part-nav a:not(.home-link):not(.switch-link) { display: none; }
 }
 
 /* 結構警告：簡報不符合 CLAUDE.md 時由 deck.js 顯示 */
