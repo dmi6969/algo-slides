@@ -281,7 +281,9 @@
       if (node.classList.contains('io-label')) {
         runs.push({ text: (runs.length ? '      ' : '') + node.textContent.trim() + '   ', bold: true, color: ctx.c.accent, size: SIZE.label });
       } else {
-        runs.push({ text: node.textContent, code: true, color: ctx.c.textStrong });
+        // 連續兩段程式碼（例如設計題的操作和參數）之間加空白
+        const prev = runs[runs.length - 1];
+        runs.push({ text: (prev && prev.code ? '  ' : '') + node.textContent, code: true, color: ctx.c.textStrong });
       }
     });
     const inner = textBlock([{ runs: runs }], { size: SIZE.io, color: ctx.c.textStrong }, x + 0.2, w - 0.3);

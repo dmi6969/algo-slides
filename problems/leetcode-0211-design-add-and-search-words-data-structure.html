@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algo Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-problem-id="leetcode-0211-design-add-and-search-words-data-structure" data-variant="reference">
+  <div class="reveal">
+    <div class="slides">
+
+      <section data-part="title" class="title-slide">
+        <p class="eyebrow"><span data-fill="platform"></span> · <span data-fill="number"></span></p>
+        <h1 data-fill="title"></h1>
+        <div class="meta">
+          <span data-fill="difficulty" class="badge"></span>
+          <span data-fill="tags" class="tag-list"></span>
+        </div>
+        <p class="source-link"><a data-fill="url" href="#" target="_blank" rel="noopener">查看原題 ↗</a></p>
+      </section>
+
+      <section data-part="overview">
+        <h2>設計一個能加入單字、並支援萬用字元搜尋的字典</h2>
+        <ul>
+          <li>實作 <code>WordDictionary</code> 類別，支援兩種操作</li>
+          <li><code>addWord(word)</code>：把單字加入字典</li>
+          <li><code>search(word)</code>：查詢字典裡有沒有相符的單字；<code>.</code> 可以代表任意一個字母</li>
+          <li><strong>輸入：</strong>一連串的操作和參數</li>
+          <li><strong>輸出：</strong>每次 <code>search</code> 回傳 <code>true</code> 或 <code>false</code></li>
+        </ul>
+        <p class="label">限制</p>
+        <ul>
+          <li>$1 \le |\text{word}| \le 25$；加入的單字只有小寫英文字母</li>
+          <li>查詢的單字最多有 $2$ 個 <code>.</code>；兩種操作合計最多呼叫 $10^4$ 次</li>
+        </ul>
+        <div class="callout">
+          每次查詢都和所有單字逐一比對，最壞約 $5 \times 10^3 \times 5 \times 10^3 \times 25 \approx 6 \times 10^8$ 次字元比較，很可能超時；需要讓每次查詢只比對有可能相符的單字。
+        </div>
+        <aside class="notes">
+          最壞情況是一半的操作加入單字、一半的操作查詢：5000 個單字、5000 次查詢，每次都要比對 25 個字元。
+          「最多 2 個 .」這個限制很重要，它決定了萬用字元搜尋最多會分出多少條路。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>範例（Example）</h2>
+        <div class="io-grid">
+          <div>
+            <h3>INPUT</h3>
+            <pre>["WordDictionary","addWord","addWord","addWord","search","search","search","search"]
+[[],["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]]</pre>
+          </div>
+          <div>
+            <h3>OUTPUT</h3>
+            <pre>[null,null,null,null,false,true,true,true]</pre>
+          </div>
+        </div>
+        <p class="muted">第一行是依序呼叫的操作，第二行是每次操作的參數；<code>null</code> 代表沒有回傳值。</p>
+        <aside class="notes">
+          這是設計題常見的範例格式：兩個陣列一一對應，第 i 個操作搭配第 i 組參數。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>逐步說明：依序執行每個操作</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>["WordDictionary","addWord","addWord","addWord","search","search","search","search"]</code>
+          <code>[[],["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]]</code>
+          <span class="io-label">OUTPUT</span><code>[null,null,null,null,false,true,true,true]</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>操作</th><th>字典內容</th><th>結果</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1–3</td><td><code>addWord</code> bad、dad、mad</td><td>bad、dad、mad</td><td><code>null</code></td></tr>
+            <tr><td>4</td><td><code>search("pad")</code></td><td>同上</td><td><code>false</code>：沒有 pad</td></tr>
+            <tr><td>5</td><td><code>search("bad")</code></td><td>同上</td><td><code>true</code>：bad 完全相同</td></tr>
+            <tr><td>6</td><td><code>search(".ad")</code></td><td>同上</td><td><code>true</code>：bad、dad、mad 都相符</td></tr>
+            <tr class="is-answer"><td>7</td><td><code>search("b..")</code></td><td>同上</td><td><code>true</code>：bad 相符</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">相符的條件：長度相同，而且每個位置要嘛字母一樣，要嘛查詢的那一格是 <code>.</code>。</p>
+      </section>
+
+      <section data-part="idea">
+        <h2>解題想法</h2>
+        <div class="compare">
+          <div class="card">
+            <h3>暴力解</h3>
+            <ul>
+              <li>用陣列存所有單字</li>
+              <li>查詢時逐一比對每個單字，<code>.</code> 直接算相符</li>
+              <li>每次查詢 $O(N \cdot L)$，$N$ 是單字數，$L$ 是長度</li>
+            </ul>
+          </div>
+          <div class="card is-best">
+            <h3>最佳解：Trie（字典樹）+ DFS</h3>
+            <ul>
+              <li>把單字一個字母一個字母存進 Trie，相同的前綴共用節點</li>
+              <li>一般字母只走一條路；遇到 <code>.</code> 才往所有分支搜尋</li>
+              <li>每次查詢最多 $O(26^2 \cdot L)$，和單字數 $N$ 無關</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout fragment">
+          <strong>關鍵觀察：</strong>查詢字串的第 $i$ 個字元，只會影響 Trie 第 $i$ 層要往哪裡走。一般字母只有一條路，每個 <code>.</code> 最多分出 $26$ 條路，所以查詢最多走過的路徑數是
+          $$\text{paths} \le 26^{d}, \quad d \le 2$$
+          其中 $d$ 是查詢字串裡 <code>.</code> 的個數。
+        </div>
+        <aside class="notes">
+          暴力解的問題是：每次查詢都要看過所有單字，單字越多越慢。
+          Trie 的好處是相同前綴只存一次，查詢時沿著字母往下走，完全不會碰到不相關的單字。
+          題目保證最多 2 個 .，所以最壞情況也只有 26 × 26 = 676 條路，每條路長度最多 25。
+        </aside>
+      </section>
+
+      <section data-part="idea">
+        <h2>用 Trie 查一次 search(".ad")</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>["WordDictionary","addWord","addWord","addWord","search","search","search","search"]</code>
+          <code>[[],["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]]</code>
+          <span class="io-label">OUTPUT</span><code>[null,null,null,null,false,true,true,true]</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>目前節點</th><th>要比對的字元</th><th>動作</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>root（第 $0$ 層）</td><td><code>.</code></td><td>萬用字元：依序嘗試 b、d、m 三個分支，先走 b</td></tr>
+            <tr><td>2</td><td>b（第 $1$ 層）</td><td><code>a</code></td><td>有 a 這條路，往下走</td></tr>
+            <tr><td>3</td><td>ba（第 $2$ 層）</td><td><code>d</code></td><td>有 d 這條路，往下走</td></tr>
+            <tr class="is-answer"><td>4</td><td>bad（第 $3$ 層）</td><td>字串結束</td><td>這個節點有單字結束，回傳 <code>true</code></td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Trie 裡有三條路：b → a → d、d → a → d、m → a → d。查詢 <code>search("pad")</code> 時，root 底下沒有 p，第一步就回傳 <code>false</code>。</p>
+      </section>
+
+      <section data-part="coding">
+        <h2>程式碼（1/2）：Trie 節點與 addWord</h2>
+        <pre><code class="language-cpp" data-trim data-line-numbers="2-6|11-12|13-17|18"><script type="text/template">
+class WordDictionary {
+    struct Node {
+        Node* next[26] = {};  // 下一個字母
+        bool isEnd = false;   // 有單字在這裡結束
+    };
+    Node* root = new Node();
+
+public:
+    WordDictionary() {}
+
+    void addWord(string word) {
+        Node* node = root;
+        for (char c : word) {
+            int k = c - 'a';
+            if (!node->next[k]) node->next[k] = new Node();  // 沒有這條路就建立
+            node = node->next[k];
+        }
+        node->isEnd = true;
+    }
+</script></code></pre>
+        <aside class="notes">
+          按 → 會依序高亮：第 2–6 行定義 Trie 節點，每個節點有 26 個指向下一個字母的指標，以及「有沒有單字在這裡結束」；
+          第 11–12 行從 root 開始；第 13–17 行逐字往下走，沒有路就建立新節點；第 18 行在最後一個字母標記單字結束。
+        </aside>
+      </section>
+
+      <section data-part="coding">
+        <h2>程式碼（2/2）：search 與 DFS</h2>
+        <pre><code class="language-cpp" data-trim data-line-numbers="1-3|8|9-13|14-15"><script type="text/template">
+    bool search(string word) {
+        return dfs(word, 0, root);
+    }
+
+private:
+    // 從 node 開始比對 word[i..]
+    bool dfs(const string& word, int i, Node* node) {
+        if (i == (int)word.size()) return node->isEnd;
+        if (word[i] == '.') {
+            for (Node* child : node->next)  // 萬用字元：每個分支都試
+                if (child && dfs(word, i + 1, child)) return true;
+            return false;
+        }
+        Node* child = node->next[word[i] - 'a'];
+        return child && dfs(word, i + 1, child);
+    }
+};
+</script></code></pre>
+        <aside class="notes">
+          按 → 會依序高亮：第 1–3 行 search 從 root 開始 DFS；第 8 行比對完整個字串時，要確認這裡真的有單字結束；
+          第 9–13 行遇到 . 時，每個存在的分支都試一次，只要有一個成功就回傳 true；第 14–15 行一般字母只走對應的那一條路。
+          這兩頁的程式碼合起來就是完整的 class，可以直接提交。
+        </aside>
+      </section>
+
+      <section data-part="complexity">
+        <h2>複雜度</h2>
+        <table class="complexity">
+          <thead>
+            <tr><th>項目</th><th>複雜度</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>addWord</td><td>$O(L)$</td><td>每個字母往下走一層，必要時建立新節點</td></tr>
+            <tr><td>search</td><td>$O(26^{d} \cdot L)$</td><td>一般字母只走一條路，每個 <code>.</code> 最多分出 $26$ 條；$d \le 2$</td></tr>
+            <tr><td>空間</td><td>$O(26 \cdot S)$</td><td>$S$ 是所有加入單字的字母總數，每個節點存 $26$ 個指標</td></tr>
+          </tbody>
+        </table>
+        $$T_{\text{search}} = \underbrace{26^{d}}_{\text{branches}} \times \underbrace{L}_{\text{length}} \le 26^2 \cdot 25$$
+        <p class="muted">對照暴力解：每次查詢是 $O(N \cdot L)$，$N$ 最多約 $10^4$，而且單字越多越慢。</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="../problems.js"></script>
+  <script src="../assets/deck.js"></script>
+</body>
+</html>

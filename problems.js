@@ -77,4 +77,15 @@ window.PROBLEMS = [
       added: "2026-11-17"
     }
   },
+  {
+    id: "leetcode-0211-design-add-and-search-words-data-structure",
+    platform: "LeetCode",
+    number: "211",
+    title: "Design Add and Search Words Data Structure",
+    url: "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+    difficulty: "Medium",
+    tags: ["String", "Depth-First Search", "Design", "Trie"],
+    language: "C++",
+    added: "2026-11-17"
+  },
 ];
