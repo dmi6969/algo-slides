@@ -1,0 +1,9 @@
+# 本機驗證程式碼用的暫存檔（CLAUDE.md 第 9 節）
+scratch/
+*.exe
+*.out
+
+# 系統檔
+.DS_Store
+Thumbs.db
+desktop.ini

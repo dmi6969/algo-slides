@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 網頁標題由 deck.js 依 problems.js 自動改寫，這裡不用改 -->
+  <title>Algo Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-problem-id="TEMPLATE">
+  <!--
+    範本使用方式（CLAUDE.md 第 8 節）：
+    1. 複製到 problems/{id}.html
+    2. 把上面 <body> 的 data-problem-id 改成題目 id
+    3. 依 CLAUDE.md 第 6.2 節填寫各段落，完成後刪除所有 TODO 與這類說明註解
+  -->
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 0. 標題頁：由 deck.js 從 problems.js 自動填入，不要修改 -->
+      <section data-part="title" class="title-slide">
+        <p class="eyebrow"><span data-fill="platform"></span> · <span data-fill="number"></span></p>
+        <h1 data-fill="title"></h1>
+        <div class="meta">
+          <span data-fill="difficulty" class="badge"></span>
+          <span data-fill="tags" class="tag-list"></span>
+        </div>
+        <p class="source-link"><a data-fill="url" href="#" target="_blank" rel="noopener">查看原題 ↗</a></p>
+      </section>
+
+      <!-- 1. Problem overview：一句話摘要、用自己的話重述題意、輸入輸出、限制與速度分析；數學內容用公式 -->
+      <section data-part="overview">
+        <h2>TODO 一句話說明這題要做什麼</h2>
+        <ul>
+          <li>TODO 題意重點 1（用自己的話，例如「給一個長度為 $n$ 的陣列」）</li>
+          <li>TODO 題意重點 2（條件寫成公式，例如 $\text{nums}[i] + \text{nums}[j] = \text{target}$）</li>
+          <li><strong>輸入：</strong>TODO</li>
+          <li><strong>輸出：</strong>TODO</li>
+        </ul>
+        <p class="label">限制</p>
+        <ul>
+          <li>TODO 資料範圍，例如 $1 \le n \le 10^5$</li>
+        </ul>
+        <div class="callout">
+          TODO 這個範圍代表的速度要求，例如 $n \le 10^5$ 時 $O(n^2)$ 會超時，需要 $O(n \log n)$ 以下
+        </div>
+      </section>
+
+      <!-- 2. Sample I/O（第 1 頁）：範例必須和原題完全相同 -->
+      <section data-part="sample">
+        <h2>範例</h2>
+        <div class="io-grid">
+          <div>
+            <h3>INPUT</h3>
+            <pre>TODO 範例輸入</pre>
+          </div>
+          <div>
+            <h3>OUTPUT</h3>
+            <pre>TODO 範例輸出</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Sample I/O（第 2 頁）：逐步說明。最上方用 trace-input 顯示正在說明的範例；最後一列 is-answer 要和範例輸出一致 -->
+      <section data-part="sample">
+        <h2>逐步說明</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>TODO 範例輸入（和原題相同）</code>
+          <span class="io-label">OUTPUT</span><code>TODO 範例輸出</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>TODO 狀態欄位</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>TODO</td><td>TODO</td></tr>
+            <tr><td>2</td><td>TODO</td><td>TODO</td></tr>
+            <tr class="is-answer"><td>結果</td><td>TODO</td><td>TODO 與範例輸出一致</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 3. Idea：暴力解 → 關鍵觀察 → 最佳解 -->
+      <section data-part="idea">
+        <h2>解題想法</h2>
+        <div class="compare">
+          <div class="card">
+            <h3>暴力解</h3>
+            <ul>
+              <li>TODO 做法</li>
+              <li>TODO 為什麼太慢：$O(?)$</li>
+            </ul>
+          </div>
+          <div class="card is-best">
+            <h3>最佳解</h3>
+            <ul>
+              <li>TODO 做法</li>
+              <li>TODO 複雜度：$O(?)$</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout fragment"><strong>關鍵觀察：</strong>TODO 用一句話講出讓解法變快的想法，關鍵式子另起一行寫成獨立公式</div>
+        <aside class="notes">TODO 講者備註：詳細的推導寫在這裡，簡報時按 S 開啟</aside>
+      </section>
+
+      <!-- 3. Idea（第 2 頁）：用範例走一次最佳解。最上方用 trace-input 顯示範例；最後一列 is-answer 要和範例輸出一致 -->
+      <section data-part="idea">
+        <h2>TODO 用最佳解走一次範例</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>TODO 範例輸入（和原題相同）</code>
+          <span class="io-label">OUTPUT</span><code>TODO 範例輸出</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>TODO 狀態欄位（例如 $i$、資料結構內容）</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>TODO</td><td>TODO</td></tr>
+            <tr class="is-answer"><td>結果</td><td>TODO</td><td>TODO 與範例輸出一致</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 4. Coding：能用 g++ -std=c++14 編譯；每頁最多 22 行；data-line-numbers 依程式邏輯分段高亮 -->
+      <section data-part="coding">
+        <h2>程式碼</h2>
+        <pre><code class="language-cpp" data-trim data-line-numbers="1-3|4-6|7-8"><script type="text/template">
+// TODO 換成驗證過的程式碼（LeetCode 只放 class Solution；Codeforces 放完整程式）
+#include <bits/stdc++.h>
+using namespace std;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    // TODO 讀入資料並計算答案
+}
+</script></code></pre>
+      </section>
+
+      <!-- 5. Complexity：時間與空間複雜度，並說明原因 -->
+      <section data-part="complexity">
+        <h2>複雜度</h2>
+        <table class="complexity">
+          <thead>
+            <tr><th>項目</th><th>複雜度</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>時間</td><td>TODO $O(n)$</td><td>TODO</td></tr>
+            <tr><td>空間</td><td>TODO $O(n)$</td><td>TODO</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="../problems.js"></script>
+  <script src="../assets/deck.js"></script>
+</body>
+</html>

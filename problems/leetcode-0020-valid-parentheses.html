@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algo Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-problem-id="leetcode-0020-valid-parentheses">
+  <div class="reveal">
+    <div class="slides">
+
+      <section data-part="title" class="title-slide">
+        <p class="eyebrow"><span data-fill="platform"></span> · <span data-fill="number"></span></p>
+        <h1 data-fill="title"></h1>
+        <div class="meta">
+          <span data-fill="difficulty" class="badge"></span>
+          <span data-fill="tags" class="tag-list"></span>
+        </div>
+        <p class="source-link"><a data-fill="url" href="#" target="_blank" rel="noopener">查看原題 ↗</a></p>
+      </section>
+
+      <section data-part="overview">
+        <h2>判斷括號字串是否正確配對</h2>
+        <ul>
+          <li>字串 <code>s</code> 只包含 6 種字元：<code>(</code> <code>)</code> <code>[</code> <code>]</code> <code>{</code> <code>}</code></li>
+          <li>每個右括號都要和同種類的左括號配對</li>
+          <li>配對順序要正確：比較晚打開的括號要先關上</li>
+          <li><strong>輸入：</strong>括號字串 <code>s</code></li>
+          <li><strong>輸出：</strong>合法回傳 <code>true</code>，否則回傳 <code>false</code></li>
+        </ul>
+        <p class="label">限制</p>
+        <ul>
+          <li>$1 \le |s| \le 10^4$</li>
+        </ul>
+        <div class="callout">
+          $n \le 10^4$ 時，$O(n^2)$ 約需 $10^8$ 次操作，有超時風險；最好找 $O(n)$ 的做法。
+        </div>
+        <aside class="notes">
+          這題的重點不只是左右括號數量相同，還要種類相同、順序正確。
+          例如 "([)]" 數量完全對得上，但順序交錯，所以不合法。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>範例（Example 5）</h2>
+        <div class="io-grid">
+          <div>
+            <h3>INPUT</h3>
+            <pre>s = "([)]"</pre>
+          </div>
+          <div>
+            <h3>OUTPUT</h3>
+            <pre>false</pre>
+          </div>
+        </div>
+        <p class="muted">
+          其他範例：<code>"()"</code> → <code>true</code>；<code>"()[]{}"</code> → <code>true</code>；
+          <code>"(]"</code> → <code>false</code>；<code>"([])"</code> → <code>true</code>
+        </p>
+        <aside class="notes">
+          選 Example 5 當主要範例，是因為它的括號數量和種類都對得上，只有順序交錯，最能看出「順序」這個條件。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>逐步說明：為什麼不合法</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>s = "([)]"</code>
+          <span class="io-label">OUTPUT</span><code>false</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>讀到的字元</th><th>還沒關上的括號（舊 → 新）</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><code>(</code></td><td><code>(</code></td><td>打開一個小括號</td></tr>
+            <tr><td>2</td><td><code>[</code></td><td><code>( [</code></td><td>再打開一個中括號</td></tr>
+            <tr class="is-answer"><td>3</td><td><code>)</code></td><td><code>( [</code></td><td>最近打開的是 <code>[</code>，卻用 <code>)</code> 關閉，回傳 false</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">括號數量對了還不夠：右括號只能關閉「最近一個還沒關上」的左括號。</p>
+      </section>
+
+      <section data-part="idea">
+        <h2>解題想法</h2>
+        <div class="compare">
+          <div class="card">
+            <h3>暴力解</h3>
+            <ul>
+              <li>反覆刪掉相鄰的 <code>()</code>、<code>[]</code>、<code>{}</code>，直到刪不動</li>
+              <li>最後剩下空字串就合法</li>
+              <li>最多 $\frac{n}{2}$ 輪、每輪 $O(n)$，共 $O(n^2)$</li>
+            </ul>
+          </div>
+          <div class="card is-best">
+            <h3>最佳解：stack</h3>
+            <ul>
+              <li>左括號推入 stack</li>
+              <li>右括號和 stack 頂端比對，配對成功就彈出</li>
+              <li>每個字元只進出一次，共 $O(n)$</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout fragment">
+          <strong>關鍵觀察：</strong>右括號只能和「最近一個還沒關上的左括號」配對，也就是後進先出（LIFO），正好是 stack 的行為。
+        </div>
+        <aside class="notes">
+          暴力解每一輪都要重新掃整個字串，找相鄰的一對括號刪掉，最壞情況要刪 n/2 輪。
+          但仔細看會發現，每次遇到右括號，要比對的永遠是「最近打開、還沒關上」的那個左括號。
+          這種「最後放進去的最先拿出來」的需求，正是 stack 的用途。
+        </aside>
+      </section>
+
+      <section data-part="idea">
+        <h2>用 stack 走一次 Example 4</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>s = "([])"</code>
+          <span class="io-label">OUTPUT</span><code>true</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>字元</th><th>動作</th><th>stack（底 → 頂）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><code>(</code></td><td>左括號，推入</td><td><code>(</code></td></tr>
+            <tr><td>2</td><td><code>[</code></td><td>左括號，推入</td><td><code>( [</code></td></tr>
+            <tr><td>3</td><td><code>]</code></td><td>頂端是 <code>[</code>，配對成功，彈出</td><td><code>(</code></td></tr>
+            <tr><td>4</td><td><code>)</code></td><td>頂端是 <code>(</code>，配對成功，彈出</td><td>（空）</td></tr>
+            <tr class="is-answer"><td>結果</td><td></td><td>掃完且 stack 為空</td><td>回傳 true</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>回傳 false 的三種情況：</strong>遇到右括號時 stack 是空的、頂端的左括號種類不同、掃完後 stack 還有剩。
+        </div>
+      </section>
+
+      <section data-part="coding">
+        <h2>程式碼（C++）</h2>
+        <pre><code class="language-cpp" data-trim data-line-numbers="4|6-9|10-12|13-16|18"><script type="text/template">
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> st;  // 還沒關上的左括號
+        for (char c : s) {
+            if (c == '(' || c == '[' || c == '{') {
+                st.push(c);  // 左括號：先放著，等之後配對
+                continue;
+            }
+            if (st.empty()) return false;  // 沒有左括號可以配對
+            char open = st.top();
+            st.pop();
+            bool match = (c == ')' && open == '(') ||
+                         (c == ']' && open == '[') ||
+                         (c == '}' && open == '{');
+            if (!match) return false;  // 種類不同，或順序交錯
+        }
+        return st.empty();  // 還有左括號沒關上，就不合法
+    }
+};
+</script></code></pre>
+        <aside class="notes">
+          按 → 會依序高亮：第 4 行建立 stack；第 6–9 行遇到左括號就推入；
+          第 10–12 行取出頂端，stack 是空的就直接不合法；第 13–16 行檢查種類是否相符；
+          第 18 行確認所有左括號都已經關上。
+        </aside>
+      </section>
+
+      <section data-part="complexity">
+        <h2>複雜度</h2>
+        <table class="complexity">
+          <thead>
+            <tr><th>項目</th><th>複雜度</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>時間</td><td>$O(n)$</td><td>每個字元最多推入、彈出各一次，每次 $O(1)$</td></tr>
+            <tr><td>空間</td><td>$O(n)$</td><td>最壞情況全是左括號，stack 要存 $n$ 個字元</td></tr>
+          </tbody>
+        </table>
+        $$T(n) = \underbrace{n}_{\text{chars}} \times \underbrace{O(1)}_{\text{push / pop}} = O(n)$$
+        <p class="muted">對照暴力解：時間 $O(n^2)$。</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="../problems.js"></script>
+  <script src="../assets/deck.js"></script>
+</body>
+</html>

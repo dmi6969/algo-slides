@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algo Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-problem-id="leetcode-0001-two-sum">
+  <div class="reveal">
+    <div class="slides">
+
+      <section data-part="title" class="title-slide">
+        <p class="eyebrow"><span data-fill="platform"></span> · <span data-fill="number"></span></p>
+        <h1 data-fill="title"></h1>
+        <div class="meta">
+          <span data-fill="difficulty" class="badge"></span>
+          <span data-fill="tags" class="tag-list"></span>
+        </div>
+        <p class="source-link"><a data-fill="url" href="#" target="_blank" rel="noopener">查看原題 ↗</a></p>
+      </section>
+
+      <section data-part="overview">
+        <h2>找出兩個數，讓它們的和等於 target</h2>
+        <ul>
+          <li>給一個長度為 $n$ 的整數陣列 <code>nums</code> 和一個整數 <code>target</code></li>
+          <li>找出兩個不同的索引 $i \ne j$，使 $\text{nums}[i] + \text{nums}[j] = \text{target}$</li>
+          <li>題目保證只有一組答案，回傳順序不限</li>
+          <li><strong>輸入：</strong><code>nums</code>、<code>target</code></li>
+          <li><strong>輸出：</strong>索引 $[i, j]$</li>
+        </ul>
+        <p class="label">限制</p>
+        <ul>
+          <li>$2 \le n \le 10^4$</li>
+          <li>$-10^9 \le \text{nums}[i],\ \text{target} \le 10^9$</li>
+        </ul>
+        <div class="callout">
+          暴力解最多約 $\frac{n(n-1)}{2} \approx 5 \times 10^7$ 次比較，通常還能通過；但題目的 Follow-up 要求比 $O(n^2)$ 更快的方法。
+        </div>
+        <aside class="notes">
+          n 最大 10⁴，兩兩配對大約是 n² / 2 = 5 × 10⁷ 組，在 LeetCode 上通常還能通過。
+          不過題目最後的 Follow-up 問能不能做到比 O(n²) 更快，這份簡報的重點就是那個 O(n) 的做法。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>範例（Example 2）</h2>
+        <div class="io-grid">
+          <div>
+            <h3>INPUT</h3>
+            <pre>nums = [3,2,4], target = 6</pre>
+          </div>
+          <div>
+            <h3>OUTPUT</h3>
+            <pre>[1,2]</pre>
+          </div>
+        </div>
+        <p class="muted">
+          其他範例：<code>nums = [2,7,11,15], target = 9</code> → <code>[0,1]</code>；
+          <code>nums = [3,3], target = 6</code> → <code>[0,1]</code>
+        </p>
+        <aside class="notes">
+          選 Example 2 當主要範例，是因為答案不在陣列最前面，比較看得出搜尋的過程。
+          Example 3 的兩個數相同，之後會用它說明為什麼不會把同一個元素用兩次。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>逐步說明：檢查每一組 $(i, j)$</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>nums = [3,2,4], target = 6</code>
+          <span class="io-label">OUTPUT</span><code>[1,2]</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>$(i, j)$</th><th>$\text{nums}[i] + \text{nums}[j]$</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>$(0, 1)$</td><td>$3 + 2 = 5$</td><td>$5 \ne 6$，繼續</td></tr>
+            <tr><td>2</td><td>$(0, 2)$</td><td>$3 + 4 = 7$</td><td>$7 \ne 6$，繼續</td></tr>
+            <tr class="is-answer"><td>3</td><td>$(1, 2)$</td><td>$2 + 4 = 6$</td><td>等於 target，回傳 $[1, 2]$</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">把所有組合都試一次就能找到答案，這就是暴力解的想法。</p>
+      </section>
+
+      <section data-part="idea">
+        <h2>解題想法</h2>
+        <div class="compare">
+          <div class="card">
+            <h3>暴力解</h3>
+            <ul>
+              <li>兩層迴圈檢查每一組 $(i, j)$</li>
+              <li>共 $\frac{n(n-1)}{2}$ 組，時間 $O(n^2)$</li>
+            </ul>
+          </div>
+          <div class="card is-best">
+            <h3>最佳解：hash map</h3>
+            <ul>
+              <li>由左往右掃一次，記錄看過的數</li>
+              <li>每個數只查一次，時間 $O(n)$</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout fragment">
+          <strong>關鍵觀察：</strong>選定 $\text{nums}[i]$ 後，另一個數一定是
+          $$\text{need} = \text{target} - \text{nums}[i]$$
+          問題從「找一組數」變成「查 need 有沒有出現過」，hash map 查詢平均只要 $O(1)$。
+        </div>
+        <aside class="notes">
+          暴力解慢在對每個 nums[i]，都要往後一個一個找另一半。
+          但另一半的值其實是確定的：target − nums[i]。只要能快速知道這個值有沒有出現過、出現在哪個索引，就不用再掃一遍。
+          hash map 正好能做到：用數值當 key、索引當 value，查詢平均 O(1)。
+        </aside>
+      </section>
+
+      <section data-part="idea">
+        <h2>用 hash map 走一次 Example 2</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>nums = [3,2,4], target = 6</code>
+          <span class="io-label">OUTPUT</span><code>[1,2]</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>$i$</th><th>$\text{nums}[i]$</th><th>$\text{need}$</th><th>查詢前的 map（數值 → 索引）</th><th>動作</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>3</td><td>$6 - 3 = 3$</td><td>$\{\}$</td><td>沒找到，記錄 $3 \to 0$</td></tr>
+            <tr><td>1</td><td>2</td><td>$6 - 2 = 4$</td><td>$\{3 \to 0\}$</td><td>沒找到，記錄 $2 \to 1$</td></tr>
+            <tr class="is-answer"><td>2</td><td>4</td><td>$6 - 4 = 2$</td><td>$\{3 \to 0,\ 2 \to 1\}$</td><td>找到 $2$ 在索引 $1$，回傳 $[1, 2]$</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>先查再存：</strong>查詢時 map 只包含索引 $j \lt i$ 的數，所以 $i = 0$ 的 $3$ 不會和自己配對；而 Example 3 的第二個 $3$ 能找到第一個 $3$。
+        </div>
+      </section>
+
+      <section data-part="coding">
+        <h2>程式碼（C++）</h2>
+        <pre><code class="language-cpp" data-trim data-line-numbers="4|5-6|7-10|11"><script type="text/template">
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> seen;  // 數值 → 索引
+        for (int i = 0; i < (int)nums.size(); i++) {
+            int need = target - nums[i];  // 需要的另一個數
+            auto it = seen.find(need);
+            if (it != seen.end()) {
+                return {it->second, i};  // 找到答案
+            }
+            seen[nums[i]] = i;  // 先查再存，避免和自己配對
+        }
+        return {};  // 題目保證有解，不會執行到這裡
+    }
+};
+</script></code></pre>
+        <aside class="notes">
+          按 → 會依序高亮：第 4 行建立 map；第 5–6 行取出 nums[i] 並算出 need；
+          第 7–10 行查 map，找到就回傳；第 11 行把目前的數存進 map。
+          need 的範圍是 −2 × 10⁹ 到 2 × 10⁹，仍在 int 範圍內，不會溢位。
+        </aside>
+      </section>
+
+      <section data-part="complexity">
+        <h2>複雜度</h2>
+        <table class="complexity">
+          <thead>
+            <tr><th>項目</th><th>複雜度</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>時間</td><td>$O(n)$</td><td>每個元素處理一次，hash map 的查詢與插入平均 $O(1)$</td></tr>
+            <tr><td>空間</td><td>$O(n)$</td><td>最壞情況下，map 要存 $n - 1$ 個數</td></tr>
+          </tbody>
+        </table>
+        $$T(n) = \underbrace{n}_{\text{iterations}} \times \underbrace{O(1)}_{\text{lookup + insert}} = O(n)$$
+        <p class="muted">對照暴力解：時間 $O(n^2)$、空間 $O(1)$。這個解法是用 $O(n)$ 的額外空間換取時間。</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="../problems.js"></script>
+  <script src="../assets/deck.js"></script>
+</body>
+</html>

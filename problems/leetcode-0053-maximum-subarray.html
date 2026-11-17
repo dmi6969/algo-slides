@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algo Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-problem-id="leetcode-0053-maximum-subarray">
+  <div class="reveal">
+    <div class="slides">
+
+      <section data-part="title" class="title-slide">
+        <p class="eyebrow"><span data-fill="platform"></span> · <span data-fill="number"></span></p>
+        <h1 data-fill="title"></h1>
+        <div class="meta">
+          <span data-fill="difficulty" class="badge"></span>
+          <span data-fill="tags" class="tag-list"></span>
+        </div>
+        <p class="source-link"><a data-fill="url" href="#" target="_blank" rel="noopener">查看原題 ↗</a></p>
+      </section>
+
+      <section data-part="overview">
+        <h2>找出總和最大的連續子陣列</h2>
+        <ul>
+          <li>給一個長度為 $n$ 的整數陣列 <code>nums</code>，元素可能是負數</li>
+          <li>子陣列 $\text{nums}[l..r]$ 必須連續且不可為空，其中 $0 \le l \le r \lt n$</li>
+          <li>求所有子陣列中最大的總和 $\sum_{k=l}^{r} \text{nums}[k]$</li>
+          <li><strong>輸入：</strong>整數陣列 <code>nums</code></li>
+          <li><strong>輸出：</strong>最大總和（一個整數）</li>
+        </ul>
+        <p class="label">限制</p>
+        <ul>
+          <li>$1 \le n \le 10^5$</li>
+          <li>$-10^4 \le \text{nums}[i] \le 10^4$</li>
+        </ul>
+        <div class="callout">
+          子陣列共有 $\frac{n(n+1)}{2} \approx 5 \times 10^9$ 個，全部枚舉一定超時，需要 $O(n)$ 或 $O(n \log n)$ 的做法。
+        </div>
+        <aside class="notes">
+          答案的絕對值最多是 10⁵ × 10⁴ = 10⁹，用 int 存得下，不會溢位。
+          子陣列必須「連續」而且「不可為空」，所以就算全部都是負數，答案也是最大的那個負數，不是 0。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>範例（Example 1）</h2>
+        <div class="io-grid">
+          <div>
+            <h3>INPUT</h3>
+            <pre>nums = [-2,1,-3,4,-1,2,1,-5,4]</pre>
+          </div>
+          <div>
+            <h3>OUTPUT</h3>
+            <pre>6</pre>
+          </div>
+        </div>
+        <p class="muted">
+          其他範例：<code>nums = [1]</code> → <code>1</code>；
+          <code>nums = [5,4,-1,7,8]</code> → <code>23</code>
+        </p>
+        <aside class="notes">
+          這組範例有正有負，最能看出「什麼時候該捨棄前面的部分、重新開始」。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>逐步說明：答案是 $[4, -1, 2, 1]$</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>nums = [-2,1,-3,4,-1,2,1,-5,4]</code>
+          <span class="io-label">OUTPUT</span><code>6</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>加入的元素</th><th>子陣列</th><th>總和</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>$\text{nums}[3] = 4$</td><td>$[4]$</td><td>$4$</td></tr>
+            <tr><td>2</td><td>$\text{nums}[4] = -1$</td><td>$[4, -1]$</td><td>$3$</td></tr>
+            <tr><td>3</td><td>$\text{nums}[5] = 2$</td><td>$[4, -1, 2]$</td><td>$5$</td></tr>
+            <tr class="is-answer"><td>4</td><td>$\text{nums}[6] = 1$</td><td>$[4, -1, 2, 1]$</td><td>$6$</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">往左延伸的任何一段（例如 $[1, -3]$）總和都是負的，往右的 $[-5]$、$[-5, 4]$ 也是，加進來只會讓總和變小，所以這一段不能再延伸。</p>
+      </section>
+
+      <section data-part="idea">
+        <h2>解題想法</h2>
+        <div class="compare">
+          <div class="card">
+            <h3>暴力解</h3>
+            <ul>
+              <li>枚舉所有起點 $l$，往右延伸並累加</li>
+              <li>共 $\frac{n(n+1)}{2}$ 個子陣列，時間 $O(n^2)$</li>
+            </ul>
+          </div>
+          <div class="card is-best">
+            <h3>最佳解：DP（Kadane's algorithm）</h3>
+            <ul>
+              <li>只記錄以 $i$ 結尾的最大和 $dp[i]$</li>
+              <li>由左往右掃一次，時間 $O(n)$</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout fragment">
+          <strong>關鍵觀察：</strong>以 $i$ 結尾的最佳子陣列，要嘛接在以 $i-1$ 結尾的最佳子陣列後面，要嘛從 $\text{nums}[i]$ 重新開始：
+          $$dp[i] = \max\bigl(dp[i-1] + \text{nums}[i],\ \text{nums}[i]\bigr)$$
+          答案是 $\max\limits_{0 \le i \lt n} dp[i]$，初始值 $dp[0] = \text{nums}[0]$。
+        </div>
+        <aside class="notes">
+          換個角度看這條式子：如果 dp[i−1] 是負的，接在它後面只會讓總和變小，不如從 nums[i] 重新開始。
+          所以 Kadane's algorithm 的直覺就是「前面的累計和一旦變成負的，就丟掉重來」。
+        </aside>
+      </section>
+
+      <section data-part="idea">
+        <h2>用 DP 走一次 Example 1</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>nums = [-2,1,-3,4,-1,2,1,-5,4]</code>
+          <span class="io-label">OUTPUT</span><code>6</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>$i$</th><th>$\text{nums}[i]$</th><th>$dp[i-1] + \text{nums}[i]$</th><th>$dp[i]$</th><th>best</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>$-2$</td><td>—</td><td>$-2$</td><td>$-2$</td></tr>
+            <tr><td>1</td><td>$1$</td><td>$-2 + 1 = -1$</td><td>$1$</td><td>$1$</td></tr>
+            <tr><td>2</td><td>$-3$</td><td>$1 - 3 = -2$</td><td>$-2$</td><td>$1$</td></tr>
+            <tr><td>3</td><td>$4$</td><td>$-2 + 4 = 2$</td><td>$4$</td><td>$4$</td></tr>
+            <tr><td>4</td><td>$-1$</td><td>$4 - 1 = 3$</td><td>$3$</td><td>$4$</td></tr>
+            <tr><td>5</td><td>$2$</td><td>$3 + 2 = 5$</td><td>$5$</td><td>$5$</td></tr>
+            <tr><td>6</td><td>$1$</td><td>$5 + 1 = 6$</td><td>$6$</td><td>$6$</td></tr>
+            <tr><td>7</td><td>$-5$</td><td>$6 - 5 = 1$</td><td>$1$</td><td>$6$</td></tr>
+            <tr class="is-answer"><td>8</td><td>$4$</td><td>$1 + 4 = 5$</td><td>$5$</td><td>$6$</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">$i = 3$ 時 $dp[2] + 4 = 2 \lt 4$，所以從 $4$ 重新開始，這正是答案子陣列的起點。</p>
+      </section>
+
+      <section data-part="coding">
+        <h2>程式碼（C++）</h2>
+        <pre><code class="language-cpp" data-trim data-line-numbers="4-5|7-8|9|11"><script type="text/template">
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int cur = nums[0];   // dp[i]：以位置 i 結尾的最大和
+        int best = nums[0];  // 目前看過的最大和
+        for (int i = 1; i < (int)nums.size(); i++) {
+            // 接在前一段後面，或從自己重新開始
+            cur = max(cur + nums[i], nums[i]);
+            best = max(best, cur);
+        }
+        return best;
+    }
+};
+</script></code></pre>
+        <aside class="notes">
+          按 → 會依序高亮：第 4–5 行設定初始值 dp[0] 和 best；第 7–8 行就是遞迴式 dp[i] = max(dp[i−1] + nums[i], nums[i])；
+          第 9 行更新答案；第 11 行回傳。
+          因為計算 dp[i] 只需要 dp[i−1]，所以不用開整個 dp 陣列，一個變數 cur 就夠了。
+        </aside>
+      </section>
+
+      <section data-part="complexity">
+        <h2>複雜度</h2>
+        <table class="complexity">
+          <thead>
+            <tr><th>項目</th><th>複雜度</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>時間</td><td>$O(n)$</td><td>每個位置只算一次 $dp[i]$，每次 $O(1)$</td></tr>
+            <tr><td>空間</td><td>$O(1)$</td><td>只用 <code>cur</code> 和 <code>best</code> 兩個變數，不必存整個 dp 陣列</td></tr>
+          </tbody>
+        </table>
+        $$T(n) = \underbrace{n}_{\text{positions}} \times \underbrace{O(1)}_{\text{one max}} = O(n)$$
+        <p class="muted">對照暴力解：時間 $O(n^2)$。Follow-up 提到的分治法是 $O(n \log n)$，思路不同，但比 DP 慢。</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="../problems.js"></script>
+  <script src="../assets/deck.js"></script>
+</body>
+</html>

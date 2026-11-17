@@ -1,0 +1,657 @@
+/* ==========================================================================
+   Algo Slides 共用樣式（規則見 CLAUDE.md 第 7 節）
+   1. 設計變數：全站的顏色與字型只能在這裡定義
+   2. 共用元件：難度徽章、標籤
+   3. 首頁（body.home）
+   4. 簡報內容（.reveal）
+   5. 簡報外層：段落導覽列、結構警告
+   ========================================================================== */
+
+/* ---------- 1. 設計變數 ---------- */
+:root {
+  color-scheme: light;
+
+  /* 底色與文字：中灰 #888888。中灰底上只有接近黑色的字夠清楚，所以文字一律用深色 */
+  --bg: #888888;
+  --surface: #a0a0a0;
+  --surface-2: #959595;
+  --border: #6e6e6e;
+  --text: #0f0f0f;
+  --text-strong: #0a1a33;
+  --text-muted: #1f1f1f;
+
+  /* 主色：深藍（中灰底上，亮藍色的字會看不清楚） */
+  --accent: #081a5a;
+  --accent-hover: #000c33;
+  --accent-on-navy: #3b82f6;
+  --accent-bg: #9ca6b8;
+  --accent-border: #6d7a92;
+
+  /* 深藍：分隔頁、表格標題列、首頁頂部 */
+  --navy: #1e3a5f;
+  --navy-border: #3b5779;
+  --on-navy: #ffffff;
+  --on-navy-soft: #cbd5e1;
+  --on-navy-muted: #93c5fd;
+
+  /* 綠：重點框 */
+  --success: #0f4d25;
+  --success-bg: #98ad9e;
+  --success-text: #062712;
+
+  /* 程式碼區塊 */
+  --code-bg: #0f172a;
+
+  /* 難度：當作徽章的底色，搭配白字 */
+  --easy: #166534;
+  --medium: #92400e;
+  --hard: #b91c1c;
+
+  /* 警告 */
+  --danger: #b91c1c;
+  --on-danger: #ffffff;
+
+  /* 字型與圓角 */
+  --font-body: "Inter", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+  --font-code: "JetBrains Mono", Consolas, "Courier New", monospace;
+  --radius: 8px;
+
+  /* reveal.js 主題變數：覆寫 white 主題。字級以 1280×720 的投影片為準 */
+  --r-background-color: var(--bg);
+  --r-main-font: var(--font-body);
+  --r-main-font-size: 22px;
+  --r-main-color: var(--text);
+  --r-heading-font: var(--font-body);
+  --r-heading-color: var(--text-strong);
+  --r-heading-font-weight: 700;
+  --r-heading-text-transform: none;
+  --r-heading-letter-spacing: normal;
+  --r-heading-line-height: 1.25;
+  --r-heading1-size: 2.6em;
+  --r-heading2-size: 1.55em;
+  --r-heading3-size: 1.05em;
+  --r-code-font: var(--font-code);
+  --r-link-color: var(--accent);
+  --r-link-color-hover: var(--accent-hover);
+  --r-selection-background-color: var(--accent-border);
+  --r-selection-color: var(--text-strong);
+}
+
+/* ---------- 2. 共用元件 ---------- */
+/* 難度徽章：有色底配白字，不受頁面底色影響 */
+.badge {
+  display: inline-block;
+  padding: 0.1em 0.65em;
+  border-radius: 999px;
+  background: var(--navy);
+  color: var(--on-navy);
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.badge.easy { background: var(--easy); }
+.badge.medium { background: var(--medium); }
+.badge.hard { background: var(--hard); }
+.badge.rating { background: var(--navy); }
+
+.tag {
+  display: inline-block;
+  padding: 0.1em 0.6em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.75em;
+  line-height: 1.6;
+}
+.tag-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+}
+
+kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text-strong);
+  font-family: var(--font-code);
+  font-size: 0.85em;
+}
+
+/* ---------- 3. 首頁 ---------- */
+body.home {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.home a { color: var(--accent); }
+.home a:hover { color: var(--accent-hover); }
+
+.home-header,
+.home-main,
+.home-footer {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* 首頁頂部：深藍色橫幅，和簡報的分隔頁一致 */
+.home-hero {
+  margin-bottom: 32px;
+  background: var(--navy);
+}
+.home-header {
+  padding-top: 56px;
+  padding-bottom: 40px;
+}
+.home-header h1 {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent-on-navy);
+  color: var(--on-navy);
+  font-size: clamp(32px, 6vw, 44px);
+  line-height: 1.15;
+}
+.home-header .subtitle {
+  max-width: 40em;
+  margin: 0;
+  color: var(--on-navy-soft);
+}
+
+.part-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: part;
+}
+.part-chips li {
+  counter-increment: part;
+  padding: 4px 12px;
+  border: 1px solid var(--navy-border);
+  border-radius: 999px;
+  color: var(--on-navy);
+  font-size: 14px;
+}
+.part-chips li::before {
+  content: counter(part) " ";
+  color: var(--on-navy-muted);
+  font-weight: 700;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.toolbar input[type="search"] {
+  flex: 1 1 240px;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+.toolbar input[type="search"]:focus {
+  border-color: transparent;
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.filter-group button {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.filter-group button:hover {
+  border-color: var(--text-muted);
+  color: var(--text-strong);
+}
+.filter-group button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-navy);
+  font-weight: 700;
+}
+
+.count {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.problem-card a {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.problem-card a:hover,
+.problem-card a:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+  color: inherit;
+  transform: translateY(-2px);
+}
+.problem-card .eyebrow {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.problem-card h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 20px;
+  line-height: 1.3;
+}
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+}
+.card-foot {
+  margin: auto 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.empty {
+  padding: 48px 16px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.home-footer {
+  padding-top: 48px;
+  padding-bottom: 64px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.home-footer p { margin: 4px 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .problem-card a { transition: none; }
+  .problem-card a:hover { transform: none; }
+}
+
+/* ---------- 4. 簡報內容 ---------- */
+/* 內容從左上開始排（不垂直置中），四周留固定邊距 */
+.reveal .slides { text-align: left; }
+.reveal .slides > section {
+  box-sizing: border-box;
+  padding: 36px 60px 52px;
+}
+
+/* 每頁標題：深藍字＋整條藍色底線 */
+.reveal h2 {
+  margin: 0 0 0.7em;
+  padding-bottom: 0.3em;
+  border-bottom: 2px solid var(--accent);
+}
+.reveal h3 { color: var(--text-strong); }
+
+.reveal p,
+.reveal li { line-height: 1.6; }
+.reveal ul,
+.reveal ol {
+  display: block;
+  margin-left: 1.2em;
+}
+.reveal li { margin: 0.35em 0; }
+.reveal li::marker { color: var(--accent); }
+.reveal ol > li::marker { font-weight: 700; }
+.reveal strong { color: var(--text-strong); }
+.reveal .muted { color: var(--text-muted); }
+.reveal .lead {
+  color: var(--text-strong);
+  font-size: 1.15em;
+}
+.reveal :not(pre) > code {
+  padding: 0.05em 0.35em;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--text-strong);
+  font-size: 0.85em;
+}
+
+/* .label：藍色小標題，例如「限制」「STEP 1」 */
+.reveal .label {
+  margin: 1em 0 0.4em;
+  color: var(--accent);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* 標題頁：靠左排列，平台題號用小徽章 */
+.reveal .slides > section.title-slide { padding-top: 190px; }
+.reveal .title-slide .eyebrow {
+  display: inline-block;
+  margin: 0;
+  padding: 0.3em 0.75em;
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-family: var(--font-code);
+  font-size: 0.72em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.reveal .title-slide h1 {
+  margin: 0.35em 0 0.3em;
+  line-height: 1.15;
+}
+.reveal .title-slide .meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid var(--border);
+}
+.reveal .title-slide .source-link {
+  margin-top: 0.9em;
+  font-size: 0.8em;
+}
+
+/* 段落分隔頁與結尾頁：deck.js 自動產生，背景色由 data-background-color 設定 */
+.reveal .slides > section.divider-slide { padding-top: 270px; }
+.reveal .divider-slide .divider-index {
+  margin: 0 0 0.4em;
+  color: var(--on-navy-muted);
+  font-family: var(--font-code);
+  font-size: 0.8em;
+  letter-spacing: 0.1em;
+}
+.reveal .divider-slide h2 {
+  border-bottom-color: var(--accent-on-navy);
+  color: var(--on-navy);
+  font-size: 2.4em;
+}
+.reveal .slides > section.end-slide {
+  padding-top: 290px;
+  text-align: center;
+}
+.reveal .end-slide h2 {
+  border: 0;
+  color: var(--on-navy);
+  font-size: 2.6em;
+}
+
+/* .callout：淺綠色重點框；.callout.info：淺藍色補充說明框 */
+.reveal .callout {
+  margin: 0.8em 0 0;
+  padding: 0.7em 1em;
+  border-left: 3px solid var(--success);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--success-bg);
+  font-size: 0.9em;
+}
+.reveal .callout strong { color: var(--success-text); }
+.reveal .callout.info {
+  border-left-color: var(--accent);
+  background: var(--accent-bg);
+}
+.reveal .callout.info strong { color: var(--accent); }
+
+/* .io-grid：Input / Output 並排 */
+.reveal .io-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+.reveal .io-grid h3 {
+  margin: 0 0 0.4em;
+  color: var(--accent);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.reveal .io-grid pre {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0.8em 1em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  box-shadow: none;
+  color: var(--text-strong);
+  font-size: 0.8em;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* .trace-input：逐步說明頁的最上方，固定顯示正在追蹤的範例，觀眾不用翻回前一頁 */
+.reveal .trace-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4em 0.6em;
+  margin: 0 0 0.8em;
+  padding: 0.5em 0.9em;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface);
+  font-size: 0.85em;
+}
+.reveal .trace-input .io-label {
+  color: var(--accent);
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.reveal .trace-input code + .io-label { margin-left: 1em; }
+.reveal .trace-input code { font-size: 0.95em; }
+
+/* table.trace、table.complexity：深藍標題列、斑馬紋 */
+.reveal table.trace,
+.reveal table.complexity {
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  background: var(--surface);
+  font-size: 0.78em;
+}
+.reveal table.trace th,
+.reveal table.trace td,
+.reveal table.complexity th,
+.reveal table.complexity td {
+  padding: 0.4em 0.9em;
+  border: 1px solid var(--border);
+  line-height: 1.45;
+  text-align: left;
+  vertical-align: middle;
+}
+.reveal table.trace th,
+.reveal table.complexity th {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: var(--on-navy);
+  font-weight: 600;
+}
+.reveal table.trace tbody tr:nth-child(even) td,
+.reveal table.complexity tbody tr:nth-child(even) td {
+  background: var(--surface-2);
+}
+.reveal table.trace td:first-child {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.reveal table.trace tr.is-answer td {
+  background: var(--success-bg);
+  color: var(--success-text);
+  font-weight: 700;
+}
+.reveal table.complexity td:nth-child(2) {
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* KaTeX 公式：大小配合內文，獨立公式置中、太寬時可以橫向捲動 */
+.reveal .katex { font-size: 1.08em; }
+.reveal .katex-display {
+  margin: 0.6em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.reveal .callout .katex-display { margin: 0.4em 0; }
+
+/* .compare + .card：暴力解 vs 最佳解 */
+.reveal .compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+.reveal .card {
+  padding: 0.8em 1em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 0.9em;
+}
+.reveal .card.is-best { border-color: var(--accent); }
+.reveal .card h3 {
+  margin: 0 0 0.4em;
+  font-size: 1.05em;
+}
+.reveal .card.is-best h3 { color: var(--accent); }
+.reveal .card ul { margin-left: 1em; }
+
+/* ol.steps：藍色編號步驟 */
+.reveal ol.steps { margin-left: 1.3em; }
+.reveal ol.steps > li {
+  margin: 0.55em 0;
+  padding-left: 0.3em;
+}
+
+/* 程式碼區塊（reveal.js highlight plugin＋github-dark 配色） */
+.reveal pre {
+  width: 100%;
+  margin: 0.3em 0 0;
+  box-shadow: none;
+  font-size: 0.72em;
+}
+.reveal pre code {
+  max-height: 560px;
+  padding: 1em 1.2em;
+  border-radius: var(--radius);
+  line-height: 1.55;
+}
+.reveal .hljs { background: var(--code-bg); }
+
+/* 頁碼：右下角淡灰色 */
+.reveal .slide-number {
+  right: 16px;
+  bottom: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+/* ---------- 5. 簡報外層 ---------- */
+/* 段落導覽列：deck.js 產生，固定在左下角 */
+.part-nav {
+  position: fixed;
+  left: 16px;
+  bottom: 12px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+.part-nav a {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.part-nav a:hover { color: var(--text-strong); }
+.part-nav a.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-navy);
+  font-weight: 700;
+}
+.part-nav .home-link { margin-right: 8px; }
+
+@media (max-width: 900px) {
+  .part-nav a:not(.home-link) { display: none; }
+}
+
+/* 結構警告：簡報不符合 CLAUDE.md 時由 deck.js 顯示 */
+.structure-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: 10px 16px;
+  background: var(--danger);
+  color: var(--on-danger);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.structure-warning ul {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}

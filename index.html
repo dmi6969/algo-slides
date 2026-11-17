@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algo Slides</title>
+  <meta name="description" content="LeetCode 與 Codeforces 演算法題解簡報">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="home">
+  <div class="home-hero">
+    <header class="home-header">
+      <h1>Algo Slides</h1>
+      <p class="subtitle">LeetCode 與 Codeforces 的演算法題解簡報。每一份簡報都用同樣的五個段落介紹一道題目：</p>
+      <ol class="part-chips">
+        <li>Problem overview</li>
+        <li>Sample I/O</li>
+        <li>Idea</li>
+        <li>Coding</li>
+        <li>Complexity</li>
+      </ol>
+    </header>
+  </div>
+
+  <main class="home-main">
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="搜尋題名、題號或標籤" aria-label="搜尋題目">
+      <div class="filter-group" role="group" aria-label="依平台篩選">
+        <button type="button" data-platform="all" aria-pressed="true">全部</button>
+        <button type="button" data-platform="LeetCode" aria-pressed="false">LeetCode</button>
+        <button type="button" data-platform="Codeforces" aria-pressed="false">Codeforces</button>
+      </div>
+      <p id="count" class="count" aria-live="polite"></p>
+    </div>
+
+    <ul id="problem-grid" class="problem-grid"></ul>
+    <p id="empty" class="empty" hidden></p>
+  </main>
+
+  <footer class="home-footer">
+    <p>簡報操作：方向鍵翻頁，<kbd>F</kbd> 全螢幕，<kbd>S</kbd> 講者備註，<kbd>Esc</kbd> 投影片總覽。</p>
+    <p>新增題目的規則寫在專案的 CLAUDE.md。</p>
+  </footer>
+
+  <script src="problems.js"></script>
+  <script src="assets/home.js"></script>
+</body>
+</html>

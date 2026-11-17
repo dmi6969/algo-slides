@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algo Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-problem-id="leetcode-0003-longest-substring-without-repeating-characters">
+  <div class="reveal">
+    <div class="slides">
+
+      <section data-part="title" class="title-slide">
+        <p class="eyebrow"><span data-fill="platform"></span> · <span data-fill="number"></span></p>
+        <h1 data-fill="title"></h1>
+        <div class="meta">
+          <span data-fill="difficulty" class="badge"></span>
+          <span data-fill="tags" class="tag-list"></span>
+        </div>
+        <p class="source-link"><a data-fill="url" href="#" target="_blank" rel="noopener">查看原題 ↗</a></p>
+      </section>
+
+      <section data-part="overview">
+        <h2>找出沒有重複字元的最長子字串</h2>
+        <ul>
+          <li>給一個字串 <code>s</code>，可能包含英文字母、數字、符號和空白</li>
+          <li>子字串 $s[l..r]$ 必須連續，而且每個字元只能出現一次</li>
+          <li>求這種子字串的最大長度 $r - l + 1$</li>
+          <li><strong>輸入：</strong>字串 <code>s</code></li>
+          <li><strong>輸出：</strong>最大長度（空字串時為 $0$）</li>
+        </ul>
+        <p class="label">限制</p>
+        <ul>
+          <li>$0 \le |s| \le 10^5$</li>
+        </ul>
+        <div class="callout">
+          枚舉所有子字串再逐一檢查是 $O(n^3)$，$n = 10^5$ 時一定超時，需要 $O(n)$ 的做法。
+        </div>
+        <aside class="notes">
+          注意「子字串」和「子序列」的差別：子字串必須連續，子序列可以跳著選。
+          這題要的是子字串。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>範例（Example 3）</h2>
+        <div class="io-grid">
+          <div>
+            <h3>INPUT</h3>
+            <pre>s = "pwwkew"</pre>
+          </div>
+          <div>
+            <h3>OUTPUT</h3>
+            <pre>3</pre>
+          </div>
+        </div>
+        <p class="muted">
+          其他範例：<code>"abcabcbb"</code> → <code>3</code>；<code>"bbbbb"</code> → <code>1</code>
+        </p>
+        <aside class="notes">
+          選 Example 3 當主要範例，是因為它有連續重複的 ww，而且可以用來說明子字串和子序列的差別。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>逐步說明：從每個起點往右延伸</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>s = "pwwkew"</code>
+          <span class="io-label">OUTPUT</span><code>3</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>起點 $l$</th><th>往右延伸到出現重複為止</th><th>長度</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td><code>pw</code>（下一個 <code>w</code> 重複）</td><td>$2$</td></tr>
+            <tr><td>1</td><td><code>w</code>（下一個 <code>w</code> 重複）</td><td>$1$</td></tr>
+            <tr><td>2</td><td><code>wke</code>（下一個 <code>w</code> 重複）</td><td>$3$</td></tr>
+            <tr><td>3</td><td><code>kew</code>（到字串結尾）</td><td>$3$</td></tr>
+            <tr><td>4</td><td><code>ew</code>（到字串結尾）</td><td>$2$</td></tr>
+            <tr><td>5</td><td><code>w</code>（到字串結尾）</td><td>$1$</td></tr>
+            <tr class="is-answer"><td>結果</td><td><code>wke</code> 或 <code>kew</code></td><td>$3$</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>注意：</strong>子字串必須連續。<code>"pwke"</code> 是子序列（subsequence），不是子字串，所以答案不是 $4$。
+        </div>
+      </section>
+
+      <section data-part="idea">
+        <h2>解題想法</h2>
+        <div class="compare">
+          <div class="card">
+            <h3>暴力解</h3>
+            <ul>
+              <li>枚舉所有子字串 $s[l..r]$，逐一檢查有沒有重複</li>
+              <li>共 $O(n^2)$ 個子字串，每個檢查 $O(n)$，總共 $O(n^3)$</li>
+            </ul>
+          </div>
+          <div class="card is-best">
+            <h3>最佳解：sliding window</h3>
+            <ul>
+              <li>維護一個沒有重複字元的視窗 $[l, r]$</li>
+              <li>右端每次前進一格；遇到重複，左端直接跳過去</li>
+              <li>$l$ 和 $r$ 都只往右移，共 $O(n)$</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout fragment">
+          <strong>關鍵觀察：</strong>記錄每個字元上一次出現的位置 $\text{last}[c]$。如果 $s[r]$ 已經在視窗裡出現過，左端直接跳到它的下一格：
+          $$l \leftarrow \max\bigl(l,\ \text{last}[s[r]] + 1\bigr)$$
+          左端只會往右移，不必回頭重新檢查。
+        </div>
+        <aside class="notes">
+          暴力解浪費的地方在於：每換一個起點，就要從頭重新檢查。
+          其實視窗 s[l..r−1] 已經確定沒有重複，加入 s[r] 時，只要知道 s[r] 上次出現在哪裡，就能直接決定左端要移到哪。
+          用一個大小 256 的陣列記錄每個字元上次出現的位置，查詢只要 O(1)。
+        </aside>
+      </section>
+
+      <section data-part="idea">
+        <h2>用 sliding window 走一次 Example 3</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>s = "pwwkew"</code>
+          <span class="io-label">OUTPUT</span><code>3</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>$r$</th><th>$s[r]$</th><th>$\text{last}[s[r]]$（更新前）</th><th>$l$</th><th>視窗</th><th>best</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td><code>p</code></td><td>$-1$</td><td>$0$</td><td><code>p</code></td><td>$1$</td></tr>
+            <tr><td>1</td><td><code>w</code></td><td>$-1$</td><td>$0$</td><td><code>pw</code></td><td>$2$</td></tr>
+            <tr><td>2</td><td><code>w</code></td><td>$1$</td><td>$2$</td><td><code>w</code></td><td>$2$</td></tr>
+            <tr><td>3</td><td><code>k</code></td><td>$-1$</td><td>$2$</td><td><code>wk</code></td><td>$2$</td></tr>
+            <tr><td>4</td><td><code>e</code></td><td>$-1$</td><td>$2$</td><td><code>wke</code></td><td>$3$</td></tr>
+            <tr class="is-answer"><td>5</td><td><code>w</code></td><td>$2$</td><td>$3$</td><td><code>kew</code></td><td>$3$</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>為什麼要取 max：</strong>以 <code>"abba"</code> 為例，讀到最後的 <code>a</code> 時，它上次出現在位置 $0$，已經在視窗左邊。如果直接設 $l = 0 + 1 = 1$，左端會往回跳，視窗 <code>"bba"</code> 就有重複了。
+        </div>
+      </section>
+
+      <section data-part="coding">
+        <h2>程式碼（C++）</h2>
+        <pre><code class="language-cpp" data-trim data-line-numbers="4-5|6-7|8|9|10"><script type="text/template">
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        vector<int> last(256, -1);  // 每個字元上一次出現的位置
+        int best = 0, left = 0;     // 視窗是 s[left..right]
+        for (int right = 0; right < (int)s.size(); right++) {
+            unsigned char c = s[right];
+            left = max(left, last[c] + 1);  // 有重複就把左端移到它的下一格
+            last[c] = right;
+            best = max(best, right - left + 1);
+        }
+        return best;
+    }
+};
+</script></code></pre>
+        <aside class="notes">
+          按 → 會依序高亮：第 4–5 行準備 last 陣列（初始為 −1）和視窗左端；第 6–7 行右端逐格前進；
+          第 8 行就是 l ← max(l, last[s[r]] + 1)；第 9 行更新這個字元最後出現的位置；第 10 行更新答案。
+          字元先轉成 unsigned char，避免出現負的陣列索引。
+        </aside>
+      </section>
+
+      <section data-part="complexity">
+        <h2>複雜度</h2>
+        <table class="complexity">
+          <thead>
+            <tr><th>項目</th><th>複雜度</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>時間</td><td>$O(n)$</td><td>右端走過每個位置一次，每步只做 $O(1)$ 的更新</td></tr>
+            <tr><td>空間</td><td>$O(|\Sigma|)$</td><td><code>last</code> 陣列的大小固定是 $|\Sigma| = 256$，和 $n$ 無關</td></tr>
+          </tbody>
+        </table>
+        $$T(n) = \underbrace{n}_{\text{right moves}} \times \underbrace{O(1)}_{\text{update}} = O(n)$$
+        <p class="muted">對照暴力解：時間 $O(n^3)$。</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="../problems.js"></script>
+  <script src="../assets/deck.js"></script>
+</body>
+</html>
