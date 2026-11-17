@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algo Slides</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-problem-id="leetcode-0300-longest-increasing-subsequence" data-variant="mine">
+  <div class="reveal">
+    <div class="slides">
+
+      <section data-part="title" class="title-slide">
+        <p class="eyebrow"><span data-fill="platform"></span> · <span data-fill="number"></span></p>
+        <h1 data-fill="title"></h1>
+        <div class="meta">
+          <span data-fill="difficulty" class="badge"></span>
+          <span data-fill="tags" class="tag-list"></span>
+        </div>
+        <p class="source-link"><a data-fill="url" href="#" target="_blank" rel="noopener">查看原題 ↗</a></p>
+      </section>
+
+      <section data-part="overview">
+        <h2>找出最長的嚴格遞增子序列有多長</h2>
+        <ul>
+          <li>給一個長度為 $n$ 的整數陣列 <code>nums</code></li>
+          <li>子序列：刪掉 0 個或多個元素，剩下的元素保持原本的順序，不必連續</li>
+          <li>要嚴格遞增：$\text{nums}[i_1] \lt \text{nums}[i_2] \lt \cdots \lt \text{nums}[i_k]$，其中 $i_1 \lt i_2 \lt \cdots \lt i_k$</li>
+          <li><strong>輸入：</strong>整數陣列 <code>nums</code></li>
+          <li><strong>輸出：</strong>最長的長度 $k$</li>
+        </ul>
+        <p class="label">限制</p>
+        <ul>
+          <li>$1 \le n \le 2500$</li>
+          <li>$-10^4 \le \text{nums}[i] \le 10^4$</li>
+        </ul>
+        <div class="callout">
+          $n \le 2500$ 時，$O(n^2) \approx 6.25 \times 10^6$ 的 DP 就能通過；但題目的 Follow-up 要求 $O(n \log n)$。
+        </div>
+        <aside class="notes">
+          「子序列」和「子字串」不一樣：子序列可以跳著選，只要順序不變。
+          「嚴格遞增」代表相等的數不能放在一起，所以 [7,7,7] 的答案是 1。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>範例（Example 1）</h2>
+        <div class="io-grid">
+          <div>
+            <h3>INPUT</h3>
+            <pre>nums = [10,9,2,5,3,7,101,18]</pre>
+          </div>
+          <div>
+            <h3>OUTPUT</h3>
+            <pre>4</pre>
+          </div>
+        </div>
+        <p class="muted">
+          其他範例：<code>nums = [0,1,0,3,2,3]</code> → <code>4</code>；
+          <code>nums = [7,7,7,7,7,7,7]</code> → <code>1</code>
+        </p>
+        <aside class="notes">
+          選 Example 1 當主要範例，是因為它的數字忽大忽小，最能看出每個位置能接在誰後面。
+        </aside>
+      </section>
+
+      <section data-part="sample">
+        <h2>逐步說明：其中一組最長的遞增子序列</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>nums = [10,9,2,5,3,7,101,18]</code>
+          <span class="io-label">OUTPUT</span><code>4</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>步驟</th><th>選的元素</th><th>目前的子序列</th><th>長度</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>$\text{nums}[2] = 2$</td><td>$[2]$</td><td>$1$</td></tr>
+            <tr><td>2</td><td>$\text{nums}[4] = 3$</td><td>$[2, 3]$</td><td>$2$</td></tr>
+            <tr><td>3</td><td>$\text{nums}[5] = 7$</td><td>$[2, 3, 7]$</td><td>$3$</td></tr>
+            <tr class="is-answer"><td>4</td><td>$\text{nums}[6] = 101$</td><td>$[2, 3, 7, 101]$</td><td>$4$</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">索引 $2 \lt 4 \lt 5 \lt 6$，數值 $2 \lt 3 \lt 7 \lt 101$。長度 $4$ 的還有 $[2, 5, 7, 101]$、$[2, 3, 7, 18]$，但找不到長度 $5$ 的。</p>
+      </section>
+
+      <section data-part="idea">
+        <h2>我的想法</h2>
+        <ul>
+          <li>用 $a[i]$ 記錄「以 $\text{nums}[i]$ 結尾」的最長嚴格遞增子序列長度，一開始都是 $1$</li>
+          <li>對每個 $i$ 往前看所有 $j \lt i$：只要 $\text{nums}[j] \lt \text{nums}[i]$，就能把 $\text{nums}[i]$ 接在後面</li>
+          <li>答案是所有 $a[i]$ 中的最大值</li>
+        </ul>
+        <div class="callout">
+          <strong>關鍵式子：</strong>沒有符合條件的 $j$ 時，$a[i] = 1$
+          $$a[i] = 1 + \max\{\, a[j] \mid j \lt i,\ \text{nums}[j] \lt \text{nums}[i] \,\}$$
+        </div>
+        <div class="compare">
+          <div class="card">
+            <h3>我的解法：DP</h3>
+            <ul>
+              <li>$a[i]$：以 $\text{nums}[i]$ 結尾的最長長度</li>
+              <li>每個 $i$ 掃過所有 $j \lt i$，時間 $O(n^2)$</li>
+            </ul>
+          </div>
+          <div class="card is-best">
+            <h3>參考解答：貪心 + 二分搜尋</h3>
+            <ul>
+              <li>只記錄每種長度的最小結尾 $\text{tails}$</li>
+              <li>用二分搜尋更新，時間 $O(n \log n)$</li>
+            </ul>
+          </div>
+        </div>
+        <aside class="notes">
+          這是經典的 LIS 動態規劃：狀態是「以第 i 個數結尾」，因為要接上新的數，只需要知道前一個子序列的最後一個數。
+          兩種做法在 n ≤ 2500 時都能通過；參考解答的 O(n log n) 比較快，也符合題目 Follow-up 的要求。
+        </aside>
+      </section>
+
+      <section data-part="idea">
+        <h2>用我的 DP 走一次 Example 1</h2>
+        <div class="trace-input">
+          <span class="io-label">INPUT</span><code>nums = [10,9,2,5,3,7,101,18]</code>
+          <span class="io-label">OUTPUT</span><code>4</code>
+        </div>
+        <table class="trace">
+          <thead>
+            <tr><th>$i$</th><th>$\text{nums}[i]$</th><th>可以接在後面的 $j$</th><th>$a[i]$</th><th>ans</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>$10$</td><td>沒有</td><td>$1$</td><td>$1$</td></tr>
+            <tr><td>1</td><td>$9$</td><td>沒有</td><td>$1$</td><td>$1$</td></tr>
+            <tr><td>2</td><td>$2$</td><td>沒有</td><td>$1$</td><td>$1$</td></tr>
+            <tr><td>3</td><td>$5$</td><td>$j = 2$，最大 $a[j] = 1$</td><td>$2$</td><td>$2$</td></tr>
+            <tr><td>4</td><td>$3$</td><td>$j = 2$，最大 $a[j] = 1$</td><td>$2$</td><td>$2$</td></tr>
+            <tr><td>5</td><td>$7$</td><td>$j = 2, 3, 4$，最大 $a[j] = 2$</td><td>$3$</td><td>$3$</td></tr>
+            <tr><td>6</td><td>$101$</td><td>$j = 0 \ldots 5$，最大 $a[5] = 3$</td><td>$4$</td><td>$4$</td></tr>
+            <tr class="is-answer"><td>7</td><td>$18$</td><td>$j = 0 \ldots 5$，最大 $a[5] = 3$</td><td>$4$</td><td>$4$</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">$a[i]$ 只算「以 $\text{nums}[i]$ 結尾」的子序列，所以答案要取所有 $a[i]$ 的最大值，而不是直接用 $a[n-1]$。</p>
+      </section>
+
+      <section data-part="coding">
+        <h2>程式碼（C++）</h2>
+        <pre><code class="language-cpp" data-trim data-line-numbers="4-6|7-8|9-13|14|16"><script type="text/template">
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n = nums.size();
+        int ans = 0;
+        vector<int> a(n,0);
+        for(int i =0 ;i<n;i++){
+            a[i] = 1;
+            for(int j =0 ; j < i;j++){
+                if( nums[j] < nums[i] ){
+                    a[i] = max(a[i],a[j]+1);
+                }
+            }
+            ans = max(a[i],ans);
+        }
+        return ans;
+    }
+};
+</script></code></pre>
+        <aside class="notes">
+          按 → 會依序高亮：第 4–6 行準備 n、答案 ans 和 DP 陣列 a；第 7–8 行對每個 i，先設 a[i] = 1（只有自己）；
+          第 9–13 行往前檢查所有 j，如果 nums[j] 比較小，就試著接在以 nums[j] 結尾的子序列後面；
+          第 14 行更新答案；第 16 行回傳。
+        </aside>
+      </section>
+
+      <section data-part="complexity">
+        <h2>複雜度</h2>
+        <table class="complexity">
+          <thead>
+            <tr><th>項目</th><th>複雜度</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>時間</td><td>$O(n^2)$</td><td>兩層迴圈：第 $i$ 輪內層跑 $i$ 次</td></tr>
+            <tr><td>空間</td><td>$O(n)$</td><td>陣列 <code>a</code> 存 $n$ 個值</td></tr>
+          </tbody>
+        </table>
+        $$T(n) = \sum_{i=0}^{n-1} i = \frac{n(n-1)}{2} = O(n^2)$$
+        <p class="muted">和參考解答比較：參考解答是 $O(n \log n)$。$n = 2500$ 時，我的解法約 $3.1 \times 10^6$ 次比較，能通過，但不符合 Follow-up 要求的 $O(n \log n)$。</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="../problems.js"></script>
+  <script src="../assets/deck.js"></script>
+</body>
+</html>

@@ -71,6 +71,10 @@ window.PROBLEMS = [
     difficulty: "Medium",
     tags: ["Array", "Binary Search", "Dynamic Programming", "Longest Increasing Subsequence"],
     language: "C++",
-    added: "2026-11-17"
+    added: "2026-11-17",
+    mine: {
+      language: "C++",
+      added: "2026-11-17"
+    }
   },
 ];
