@@ -284,6 +284,7 @@
     '\\to': '→', '\\rightarrow': '→', '\\Rightarrow': '⇒', '\\leftarrow': '←', '\\approx': '≈', '\\in': '∈',
     '\\sum': 'Σ', '\\infty': '∞', '\\lfloor': '⌊', '\\rfloor': '⌋', '\\lceil': '⌈', '\\rceil': '⌉',
     '\\Sigma': 'Σ', '\\bigl': '', '\\bigr': '', '\\limits': '', '\\displaystyle': '',
+    '\\cdots': '⋯', '\\mid': '|',
     '\\,': ' ', '\\;': ' ', '\\ ': ' ', '\\quad': '  '
   };
 
@@ -299,7 +300,8 @@
       })
       .replace(/[{}]/g, '')
       .replace(/\u0001/g, '{')
-      .replace(/\u0002/g, '}');
+      .replace(/\u0002/g, '}')
+      .replace(/ {2,}/g, ' ');  // 「\,」這類空白指令和原本的空白疊在一起時，只留一個
   }
 
   function fallbackMath(root) {

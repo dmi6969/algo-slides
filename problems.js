@@ -62,4 +62,15 @@ window.PROBLEMS = [
     language: "C++",
     added: "2026-11-15"
   },
+  {
+    id: "leetcode-0300-longest-increasing-subsequence",
+    platform: "LeetCode",
+    number: "300",
+    title: "Longest Increasing Subsequence",
+    url: "https://leetcode.com/problems/longest-increasing-subsequence/",
+    difficulty: "Medium",
+    tags: ["Array", "Binary Search", "Dynamic Programming", "Longest Increasing Subsequence"],
+    language: "C++",
+    added: "2026-11-17"
+  },
 ];
