@@ -8,7 +8,8 @@ LeetCode 與 Codeforces 的演算法題解簡報網站。每道題目一份網�
 4. Coding
 5. Complexity
 
-- 網站：`https://{GitHub 帳號}.github.io/algo-slides/`（部署後填入）
+- 網站：https://dmi6969.github.io/algo-slides/
+- GitHub：https://github.com/dmi6969/algo-slides
 - 專案規則：[CLAUDE.md](CLAUDE.md)
 
 ## 本機預覽
