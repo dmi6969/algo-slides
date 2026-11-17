@@ -484,7 +484,6 @@
     const diffColor = { easy: ctx.c.easy, medium: ctx.c.medium, hard: ctx.c.hard }[info.cls] || ctx.c.navy;
     const meta = [{ text: info.text, bold: true, color: diffColor }];
     (p.tags || []).forEach(function (t) { meta.push({ text: '   ·   ' + t, color: ctx.c.textMuted }); });
-    meta.push({ text: '   ·   ' + ctx.variantLabel, bold: true, color: ctx.c.textStrong });
     slide.addText(textObjects([{ runs: meta }], { size: 15, color: ctx.c.text }), { x: MX, y: y, w: CW, h: 0.45, margin: 0, valign: 'middle' });
 
     y += 0.6;

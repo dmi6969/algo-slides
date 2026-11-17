@@ -1,6 +1,6 @@
 /*
  * Algo Slides 簡報共用程式
- * 1. 依 <body data-problem-id data-variant> 從 problems.js 找到題目，填入標題頁並標示版本（參考解答／我的解法）
+ * 1. 依 <body data-problem-id data-variant> 從 problems.js 找到題目，填入標題頁
  * 2. 檢查段落、版本與檔名是否符合 CLAUDE.md，不符合時在頁面頂端顯示警告
  * 3. 在每個段落前插入深藍色分隔頁，並在最後加上 THE END 頁
  * 4. 用 KaTeX 排版 $...$ 與 $$...$$ 公式（載入失敗時改成純文字）
@@ -109,10 +109,6 @@
     if (tags) {
       tags.replaceChildren.apply(tags, (problem.tags || []).map(function (t) { return el('span', 'tag', t); }));
     }
-
-    // 版本徽章：參考解答／我的解法
-    const meta = document.querySelector('.title-slide .meta');
-    if (meta) meta.appendChild(el('span', 'badge variant-badge ' + variant, VARIANTS[variant].label));
 
     const link = slot('url');
     if (link) link.href = problem.url;

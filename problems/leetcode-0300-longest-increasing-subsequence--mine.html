@@ -92,40 +92,38 @@
       </section>
 
       <section data-part="idea">
-        <h2>我的想法</h2>
-        <ul>
-          <li>用 $a[i]$ 記錄「以 $\text{nums}[i]$ 結尾」的最長嚴格遞增子序列長度，一開始都是 $1$</li>
-          <li>對每個 $i$ 往前看所有 $j \lt i$：只要 $\text{nums}[j] \lt \text{nums}[i]$，就能把 $\text{nums}[i]$ 接在後面</li>
-          <li>答案是所有 $a[i]$ 中的最大值</li>
-        </ul>
-        <div class="callout">
-          <strong>關鍵式子：</strong>沒有符合條件的 $j$ 時，$a[i] = 1$
-          $$a[i] = 1 + \max\{\, a[j] \mid j \lt i,\ \text{nums}[j] \lt \text{nums}[i] \,\}$$
-        </div>
+        <h2>解題想法</h2>
         <div class="compare">
           <div class="card">
-            <h3>我的解法：DP</h3>
+            <h3>暴力解</h3>
             <ul>
-              <li>$a[i]$：以 $\text{nums}[i]$ 結尾的最長長度</li>
-              <li>每個 $i$ 掃過所有 $j \lt i$，時間 $O(n^2)$</li>
+              <li>枚舉所有 $2^n$ 個子序列，檢查是否遞增</li>
+              <li>時間 $O(2^n \cdot n)$，$n = 2500$ 完全不可行</li>
             </ul>
           </div>
           <div class="card is-best">
-            <h3>參考解答：貪心 + 二分搜尋</h3>
+            <h3>DP</h3>
             <ul>
-              <li>只記錄每種長度的最小結尾 $\text{tails}$</li>
-              <li>用二分搜尋更新，時間 $O(n \log n)$</li>
+              <li>$a[i]$：以 $\text{nums}[i]$ 結尾的最長遞增子序列長度</li>
+              <li>往前找所有 $\text{nums}[j] \lt \text{nums}[i]$ 的 $j$，接在它後面</li>
+              <li>答案是所有 $a[i]$ 的最大值，時間 $O(n^2)$</li>
             </ul>
           </div>
         </div>
+        <div class="callout fragment">
+          <strong>關鍵觀察：</strong>要把 $\text{nums}[i]$ 接在一個子序列後面，只需要知道那個子序列的最後一個數，所以用「以哪個數結尾」當作狀態：
+          $$a[i] = 1 + \max\{\, a[j] \mid j \lt i,\ \text{nums}[j] \lt \text{nums}[i] \,\}$$
+          沒有符合條件的 $j$ 時，$a[i] = 1$。
+        </div>
         <aside class="notes">
-          這是經典的 LIS 動態規劃：狀態是「以第 i 個數結尾」，因為要接上新的數，只需要知道前一個子序列的最後一個數。
-          兩種做法在 n ≤ 2500 時都能通過；參考解答的 O(n log n) 比較快，也符合題目 Follow-up 的要求。
+          暴力解要檢查每一個子序列，數量是 2 的 n 次方。
+          但接上一個新的數時，我們只需要知道前面那個子序列的最後一個數，所以只要記錄「以每個位置結尾的最長長度」就夠了。
+          每個位置往前看一次所有比它小的數，總共 O(n²)。
         </aside>
       </section>
 
       <section data-part="idea">
-        <h2>用我的 DP 走一次 Example 1</h2>
+        <h2>用 DP 走一次 Example 1</h2>
         <div class="trace-input">
           <span class="io-label">INPUT</span><code>nums = [10,9,2,5,3,7,101,18]</code>
           <span class="io-label">OUTPUT</span><code>4</code>
@@ -189,7 +187,7 @@ public:
           </tbody>
         </table>
         $$T(n) = \sum_{i=0}^{n-1} i = \frac{n(n-1)}{2} = O(n^2)$$
-        <p class="muted">和參考解答比較：參考解答是 $O(n \log n)$。$n = 2500$ 時，我的解法約 $3.1 \times 10^6$ 次比較，能通過，但不符合 Follow-up 要求的 $O(n \log n)$。</p>
+        <p class="muted">對照暴力解：時間 $O(2^n \cdot n)$。$n = 2500$ 時約 $3.1 \times 10^6$ 次比較，可以通過。</p>
       </section>
 
     </div>

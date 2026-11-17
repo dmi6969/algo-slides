@@ -96,18 +96,6 @@
 .badge.hard { background: var(--hard); }
 .badge.rating { background: var(--navy); }
 
-/* 版本徽章：參考解答／我的解法 */
-.badge.variant-badge {
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text-strong);
-}
-.badge.variant-badge.mine {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--on-navy);
-}
-
 .tag {
   display: inline-block;
   padding: 0.1em 0.6em;
@@ -305,11 +293,6 @@ body.home {
   text-decoration: none;
 }
 .card-versions a:hover { border-color: var(--accent); }
-.card-versions a.mine {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--on-navy);
-}
 .problem-card .eyebrow {
   margin: 0;
   color: var(--accent);
